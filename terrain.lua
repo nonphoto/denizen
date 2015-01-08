@@ -70,6 +70,14 @@ Terrain.data = {
 Terrain.data.w = #Terrain.data[1]
 Terrain.data.h = #Terrain.data
 
+Terrain.lines = {
+   {
+      p = vector(200, 200),
+      hw = vector(100, 50),
+      normal = -1 * vector.normalize(vector.perpendicular(vector(100, 50)))
+   }
+}
+
 for y = 1, Terrain.data.h do
    for x = 1, Terrain.data.w do
       local tile = Terrain.data[y][x]
@@ -104,33 +112,76 @@ for y = 1, Terrain.data.h do
    end
 end
 
-Terrain.draw = function(self)
+Terrain.p = vector()
+Terrain.hw = vector()
 
-   for y = 1, self.data.h do
-      for x = 1, self.data.w do
-	 love.graphics.push()
-	 love.graphics.translate((x - 1) * tileSize, (y - 1) * tileSize)
+Terrain.draw = function(self)
+   if false then
+      for y = 1, self.data.h do
+	 for x = 1, self.data.w do
+	    love.graphics.push()
+	    love.graphics.translate((x - 1) * tileSize, (y - 1) * tileSize)
 	 
-	 local tile = self.data[y][x]
-	 if tile.vertices then
-	    local vertices = map(function(i) return i * tileSize end, tile.vertices)
-	    love.graphics.setColor(100, 100, 100, 255)
-	    love.graphics.polygon("fill", vertices)
-	 end
+	    local tile = self.data[y][x]
+	    if tile.vertices then
+	       local vertices = map(function(i) return i * tileSize end, tile.vertices)
+	       love.graphics.setColor(100, 100, 100, 255)
+	       love.graphics.polygon("fill", vertices)
+	    end
 	  
-	 if self.data[y][x].outline then
-	    love.graphics.setColor(0, 0, 255)
-	    love.graphics.polygon("line",
-				  0, 0,
-				  0, tileSize,
-				  tileSize, tileSize,
-				  tileSize, 0)
-	    tile.outline = false
-	 end
+	    if self.data[y][x].outline then
+	       love.graphics.setColor(0, 0, 255)
+	       love.graphics.polygon("line",
+				     0, 0,
+				     0, tileSize,
+				     tileSize, tileSize,
+				     tileSize, 0)
+	       tile.outline = false
+	    end
 	 
-	 love.graphics.pop()
+	    love.graphics.pop()
+	 end
       end
    end
+
+   for k, v in ipairs(self.lines) do
+      if v.color then
+	 love.graphics.setColor(255, 0, 0)
+	 v.color = false
+      else
+	 love.graphics.setColor(255, 255, 255)
+      end
+      
+      love.graphics.line(v.p.x - v.hw.x,
+			 v.p.y - v.hw.y,
+			 v.p.x + v.hw.x,
+			 v.p.y + v.hw.y)
+      
+      local d = (v.p - self.p):projectOn(v.normal)
+      local w = (self.hw):projectOn(vector.abs(v.normal))
+
+      love.graphics.setColor(255, 0, 0)
+      love.graphics.line(v.p.x,
+			 v.p.y,
+			 v.p.x + v.normal.x * 10,
+			 v.p.y + v.normal.y * 10)
+      
+      love.graphics.setColor(0, 0, 255)
+      love.graphics.line(self.p.x,
+			 self.p.y,
+			 self.p.x + d.x,
+			 self.p.y + d.y)
+
+      love.graphics.setColor(0, 255, 0)
+      love.graphics.line(self.p.x,
+			 self.p.y,
+			 self.p.x + w.x,
+			 self.p.y + w.y)
+
+
+      love.graphics.setColor(255, 255, 255)
+   end
+   
 end
 
 function Terrain.collide(self, position, velocity, halfwidth)
@@ -178,6 +229,9 @@ function Terrain.collideHorizontal(self, position, halfwidth)
    local p = position
    local hw = halfwidth
 
+   terrain.p = p
+   terrain.hw = hw
+   
    local a = Vector.floor((player.p - player.hw) / tileSize) + 1
    local b = Vector.floor((player.p + player.hw) / tileSize) + 1
    
@@ -244,4 +298,36 @@ Terrain.distanceToFloor = function(self, x, y)
    local result = tile.y < tileSize * math.floor(val)
    return false
 end
+
+Terrain.collide = function(self, position, halfwidth)
+   local p = position
+   local hw = halfwidth
+
+   self.p = position
+   self.hw = halfwidth
+   
+   local result = vector()
+   for k, v in ipairs(self.lines) do
+      -- x axis
+      local dx = math.abs(p.x - v.p.x)
+      local wx = hw.x + v.hw.x
+      if dx < wx then
+	 -- y axis
+	 local dy = math.abs(p.y - v.p.y)
+	 local wy = hw.y + v.hw.y
+	 if dy < wy then
+	    -- angle axis
+	    local da = vector.len((v.p - p):projectOn(v.normal))
+	    local wa = vector.len((hw):projectOn(vector.abs(v.normal)))
+	    if da < wa then
+	       -- this line intersects the rectangle
+	       v.color = true
+	       result = result + v.normal * (wa - da)
+	    end
+	 end
+      end
+   end
+   return result
+end
+
 return Terrain

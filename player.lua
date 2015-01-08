@@ -10,30 +10,36 @@ entity.v = vector()
 entity.a = vector()
 
 entity.update = function(self)
-   self.v.y = self.v.y + 1
-   if self.v:len() > tileSize / 2 then
-      self.v = self.v:normalize()
-      self.v = self.v * tileSize / 2
-   end
+   if false then
+      self.v.y = self.v.y + 1
+      if self.v:len() > tileSize / 2 then
+	 self.v = self.v:normalize()
+	 self.v = self.v * tileSize / 2
+      end
 
    
-   if self.v.y < 0 then
-      self:resolveUp(terrain)
-   elseif self.v.y > 0 then
-      self:resolveDown(terrain)
+      if self.v.y < 0 then
+	 self:resolveUp(terrain)
+      elseif self.v.y > 0 then
+	 self:resolveDown(terrain)
+      end
+   
+      if self.v.x < 0 then
+	 self:resolveLeft(terrain)
+      elseif self.v.x > 0 then
+	 self:resolveRight(terrain)
+      end
+   
+      self.v = self.v * 0.8
    end
    
-   if self.v.x < 0 then
-      self:resolveLeft(terrain)
-   elseif self.v.x > 0 then
-      self:resolveRight(terrain)
-   end
-   
+   self.p = self.p + self.v
+   self.p = self.p + terrain:collide(self.p, self.hw)
    self.v = self.v * 0.8
 end
 
 entity.draw = function(self)
-   love.graphics.setColor(255, 255, 255)
+   love.graphics.setColor(255, 255, 255, 100)
    love.graphics.rectangle("fill",
 			   self.p.x - self.hw.x,
 			   self.p.y - self.hw.y,
@@ -160,31 +166,31 @@ end
 
 if false then
    
-	 if tile.edges.left ~= "empty" then
-	    local tileEdge = (x - 1) * tileSize
-	    local selfEdge = self.p.x + self.hw.x
-	    local resultEdge = result.x + self.hw.x
+   if tile.edges.left ~= "empty" then
+      local tileEdge = (x - 1) * tileSize
+      local selfEdge = self.p.x + self.hw.x
+      local resultEdge = result.x + self.hw.x
 	    
-	    if selfEdge < tileEdge and tileEdge < resultEdge then
-	       if tile.edges.left == "solid" then
-		  self.v.x = 0
-		  result.x = tileEdge - self.hw.x - epsilon
-	       else
-		  local edgeHeight = (tile.height(0) + (y - 1)) * tileSize
-		  if result.y + self.hw.y > edgeHeight then
-		     self.v.x = 0
-		     result.x = tileEdge - self.hw.x - epsilon
-		  end
-	       end
-
-	    elseif tile.edges.left == "partial" then
-	       local ratio = (resultEdge - tileEdge) / tileSize
-	       local edgeHeight = (tile.height(ratio) + (y - 1)) * tileSize
-	       if result.y + self.hw.y > edgeHeight then
-		  result.y = edgeHeight - self.hw.y - epsilon
-	       end
+      if selfEdge < tileEdge and tileEdge < resultEdge then
+	 if tile.edges.left == "solid" then
+	    self.v.x = 0
+	    result.x = tileEdge - self.hw.x - epsilon
+	 else
+	    local edgeHeight = (tile.height(0) + (y - 1)) * tileSize
+	    if result.y + self.hw.y > edgeHeight then
+	       self.v.x = 0
+	       result.x = tileEdge - self.hw.x - epsilon
 	    end
 	 end
+
+      elseif tile.edges.left == "partial" then
+	 local ratio = (resultEdge - tileEdge) / tileSize
+	 local edgeHeight = (tile.height(ratio) + (y - 1)) * tileSize
+	 if result.y + self.hw.y > edgeHeight then
+	    result.y = edgeHeight - self.hw.y - epsilon
+	 end
+      end
+   end
 
 end
 

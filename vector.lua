@@ -111,11 +111,14 @@ function vector:rotated(phi)
 end
 
 function vector:perpendicular()
-   return Vector.new(-self.y, self.x)
+   return vector.new(-self.y, self.x)
 end
 
 function vector:projectOn(other)
-   return (self * other) * other / other:lenSq()
+   -- return (self * other) * other / other:lenSq()
+   local dp = (self.x * other.x + self.y * other.y)
+   return vector.new(dp * other.x,
+		     dp * other.y)
 end
 
 function vector:cross(other)
