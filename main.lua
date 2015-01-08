@@ -2,8 +2,11 @@
 -- Initialize functions and variables here
 
 math.randomseed(os.time())
+math.lerp = function(v0, v1, t)
+   return (1 - t) * v0 + (t) * v1
+end
 
-tileSize = 64
+tileSize = 32
 
 inspect = require("inspect")
 terrain = require("terrain")
@@ -31,10 +34,11 @@ end
 -- Called when calculating logic
 
 function love.update(dt)
-   if love.keyboard.isDown("up")    then player:move( 0, -1) end
-   if love.keyboard.isDown("down")  then player:move( 0,  1) end
-   if love.keyboard.isDown("left")  then player:move(-1,  0) end
-   if love.keyboard.isDown("right") then player:move( 1,  0) end
+   local v = 1.5
+   if love.keyboard.isDown("up")    then player:move( 0, -v) end
+   if love.keyboard.isDown("down")  then player:move( 0,  v) end
+   if love.keyboard.isDown("left")  then player:move(-v,  0) end
+   if love.keyboard.isDown("right") then player:move( v,  0) end
    player:update()
 end
 

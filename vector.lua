@@ -1,90 +1,86 @@
-Vector = {}
-Vector.__index = Vector
+vector = {}
+vector.__index = vector
 
-function Vector.__add(a, b)
-   if type(a) == "number" then
-      return Vector.new(b.x + a, b.y + a)
-   elseif type(b) == "number" then
-      return Vector.new(a.x + b, a.y + b)
-   else
-      return Vector.new(a.x + b.x, a.y + b.y)
-   end
-end
-
-function Vector.__sub(a, b)
-   if type(a) == "number" then
-      return Vector.new(b.x - a, b.y - a)
-   elseif type(b) == "number" then
-      return Vector.new(a.x - b, a.y - b)
-   else
-      return Vector.new(a.x - b.x, a.y - b.y)
-   end
-end
-
-function Vector.__mul(a, b)
-   if type(a) == "number" then
-      return Vector.new(b.x * a, b.y * a)
-   elseif type(b) == "number" then
-      return Vector.new(a.x * b, a.y * b)
-   else
-      return Vector.new(a.x * b.x, a.y * b.y)
-   end
-end
-
-function Vector.__div(a, b)
-   if type(a) == "number" then
-      return Vector.new(b.x / a, b.y / a)
-   elseif type(b) == "number" then
-      return Vector.new(a.x / b, a.y / b)
-   else
-      return Vector.new(a.x / b.x, a.y / b.y)
-   end
-end
-
-function Vector.__eq(a, b)
-   return a.x == b.x and a.y == b.y
-end
-
-function Vector.__lt(a, b)
-   return a.x < b.x or (a.x == b.x and a.y < b.y)
-end
-
-function Vector.__le(a, b)
-   return a.x <= b.x and a.y <= b.y
-end
-
-function Vector.__tostring(a)
-   return "(" .. a.x .. ", " .. a.y .. ")"
-end
-
-function Vector.new(x, y)
+function vector.new(x, y)
    local instance = {}
    instance.x = x or 0
    instance.y = y or 0
-   return setmetatable(instance, Vector)
+   return setmetatable(instance, vector)
 end
 
-function Vector.distance(a, b)
+function vector.__add(a, b)
+   if type(a) == "number" then
+      return vector.new(b.x + a, b.y + a)
+   elseif type(b) == "number" then
+      return vector.new(a.x + b, a.y + b)
+   else
+      return vector.new(a.x + b.x, a.y + b.y)
+   end
+end
+
+function vector.__sub(a, b)
+   if type(a) == "number" then
+      return vector.new(b.x - a, b.y - a)
+   elseif type(b) == "number" then
+      return vector.new(a.x - b, a.y - b)
+   else
+      return vector.new(a.x - b.x, a.y - b.y)
+   end
+end
+
+function vector.__mul(a, b)
+   if type(a) == "number" then
+      return vector.new(b.x * a, b.y * a)
+   elseif type(b) == "number" then
+      return vector.new(a.x * b, a.y * b)
+   else
+      return vector.new(a.x * b.x, a.y * b.y)
+   end
+end
+
+function vector.__div(a, b)
+   if type(a) == "number" then
+      return vector.new(b.x / a, b.y / a)
+   elseif type(b) == "number" then
+      return vector.new(a.x / b, a.y / b)
+   else
+      return vector.new(a.x / b.x, a.y / b.y)
+   end
+end
+
+function vector.__eq(a, b)
+   return a.x == b.x and a.y == b.y
+end
+
+function vector.__lt(a, b)
+   return a.x < b.x or (a.x == b.x and a.y < b.y)
+end
+
+function vector.__le(a, b)
+   return a.x <= b.x and a.y <= b.y
+end
+
+function vector.__tostring(a)
+   return "(" .. a.x .. ", " .. a.y .. ")"
+end
+
+function vector.distance(a, b)
    return (b - a):len()
 end
 
-function Vector:clone()
-   return Vector.new(self.x, self.y)
-end
-
-function Vector:unpack()
+function vector:unpack()
    return self.x, self.y
 end
 
-function Vector:len()
+function vector:len()
    return math.sqrt(self.x * self.x + self.y * self.y)
 end
 
-function Vector:lenSq()
+function vector:lenSq()
    return self.x * self.x + self.y * self.y
 end
 
-function Vector:normalize()
+function vector:normalize()
    local l = self:len()
    if l > 0 then
       self = self / l
@@ -92,11 +88,11 @@ function Vector:normalize()
    return self
 end
 
-function Vector:abs()
-   return Vector.new(math.abs(self.x), math.abs(self.y))
+function vector:abs()
+   return vector.new(math.abs(self.x), math.abs(self.y))
 end
 
-function Vector:rotate(phi)
+function vector:rotate(phi)
    local c = math.cos(phi)
    local s = math.sin(phi)
    self.x = c * self.x - s * self.y
@@ -104,24 +100,26 @@ function Vector:rotate(phi)
    return self
 end
 
-function Vector:floor()
+function vector:floor()
    self.x = math.floor(self.x)
    self.y = math.floor(self.y)
    return self
 end
 
-function Vector:rotated(phi)
+function vector:rotated(phi)
    return self:clone():rotate(phi)
 end
 
-function Vector:perpendicular()
+function vector:perpendicular()
    return Vector.new(-self.y, self.x)
 end
 
-function Vector:projectOn(other)
+function vector:projectOn(other)
    return (self * other) * other / other:lenSq()
 end
 
-function Vector:cross(other)
+function vector:cross(other)
    return self.x * other.y - self.y * other.x
 end
+
+setmetatable(vector, {__call = function(_, ...) return vector.new(...) end})

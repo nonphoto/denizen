@@ -47,7 +47,7 @@ function t3()
    edges.left = "partial"
    edges.right = "solid"
    result.edges = edges
-   result.height = function(x)
+   result.collide = function(x)
       local y = 1 - x
       return y
    end
