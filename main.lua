@@ -1,37 +1,40 @@
--- SETUP -----------------------------------------------------------------------
--- Initialize functions and variables here
-
 math.randomseed(os.time())
 math.lerp = function(v0, v1, t)
    return (1 - t) * v0 + (t) * v1
 end
-
-tileSize = 32
+math.sign = function(x)
+   if x > 0 then return 1 end
+   if x == 0 then return 0 end
+   if x < 0 then return -1 end
+end
 
 inspect = require("inspect")
 terrain = require("terrain")
-player = require("player")
+player = require("entity")
 
--- LOAD ------------------------------------------------------------------------
--- Called once at the beginning of the game
+require("vector")
 
 function love.load()
-   print("Loading...")
-
    love.graphics.setLineWidth(2)
    love.graphics.setDefaultFilter("nearest", "nearest")
-   
-   print("Finished loading.")
 end
 
 function love.keypressed(key)
    if key == "escape" then love.event.quit() end
 end
 
+function love.mousepressed(x, y, button)
+   if button == 'l' then
+      lineStart = vector(x, y)
+   end
+end
 
-
--- UPDATE ----------------------------------------------------------------------
--- Called when calculating logic
+function love.mousereleased(x, y, button)
+   if button == 'l' then
+      terrain:newLine(lineStart, vector(x, y))
+      lineStart = nil
+   end
+end
 
 function love.update(dt)
    local v = 1.5
@@ -39,15 +42,16 @@ function love.update(dt)
    if love.keyboard.isDown("down")  then player:move( 0,  v) end
    if love.keyboard.isDown("left")  then player:move(-v,  0) end
    if love.keyboard.isDown("right") then player:move( v,  0) end
+   if love.mouse.isDown("r") then end
    player:update()
 end
 
-
-
--- DRAW ------------------------------------------------------------------------
--- Called when drawing to the screen
-
 function love.draw()
    terrain:draw()
+   if lineStart then
+      love.graphics.setColor(255, 255, 255, 100)
+      love.graphics.line(lineStart.x, lineStart.y, love.mouse.getX(), love.mouse.getY())
+   end
    player:draw()
+   love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
 end
