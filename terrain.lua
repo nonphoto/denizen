@@ -4,11 +4,29 @@ require("util")
 local terrain = {}
 
 terrain.newLine = function(self, a, b)
-   result = {}
+   local result = {}
+   result.a = a
+   result.b = b
    result.p = (a + b) / 2
    result.line = (b - a) / 2
    result.hw = vector.abs(result.line)
    result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
+   result.setA = function(a)
+      result.a = a
+      result.p = (result.a + result.b) / 2
+      result.line = (result.b - result.a) / 2
+      result.hw = vector.abs(result.line)
+      result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
+   end
+   result.setB = function(b)
+      result.b = b
+      result.p = (result.a + result.b) / 2
+      result.line = (result.b - result.a) / 2
+      result.hw = vector.abs(result.line)
+      result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
+   end
+   ui:createDraggable(a, result.setA)
+   ui:createDraggable(b, result.setB)
    table.insert(self, result)
 end
 

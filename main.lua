@@ -11,6 +11,7 @@ end
 inspect = require("inspect")
 terrain = require("terrain")
 player = require("entity")
+ui = require("ui")
 
 require("vector")
 
@@ -53,5 +54,7 @@ function love.draw()
       love.graphics.line(lineStart.x, lineStart.y, love.mouse.getX(), love.mouse.getY())
    end
    player:draw()
-   love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
+   ui:draw()
+   love.graphics.setColor(255, 255, 255, 100)
+   love.graphics.print(love.timer.getFPS(), 10, 10)
 end
