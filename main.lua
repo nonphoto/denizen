@@ -17,7 +17,7 @@ require("vector")
 
 function love.load()
    love.graphics.setLineWidth(2)
-   love.graphics.setDefaultFilter("nearest", "nearest")
+      --    love.graphics.setDefaultFilter("nearest", "nearest")
 end
 
 function love.keypressed(key)
@@ -26,15 +26,25 @@ end
 
 function love.mousepressed(x, y, button)
    if button == 'l' then
+      if love.keyboard.isDown("lctrl") then
+	 love.mousepressed(x, y, 'r')
+	 return
+      end
       lineStart = vector(x, y)
    end
+   ui:mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
    if button == 'l' then
+      if love.keyboard.isDown("lctrl") then
+	 love.mousereleased(x, y, 'r')
+	 return
+      end
       terrain:newLine(lineStart, vector(x, y))
       lineStart = nil
    end
+   ui:mousereleased(x, y, button)
 end
 
 function love.update(dt)
@@ -44,6 +54,7 @@ function love.update(dt)
    if love.keyboard.isDown("left")  then player:move(-v,  0) end
    if love.keyboard.isDown("right") then player:move( v,  0) end
    if love.mouse.isDown("r") then end
+   terrain:update()
    player:update()
 end
 

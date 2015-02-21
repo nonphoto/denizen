@@ -60,9 +60,9 @@ function vector.__le(a, b)
    return a.x <= b.x and a.y <= b.y
 end
 
-function vector.__tostring(a)
-   return "(" .. a.x .. ", " .. a.y .. ")"
-end
+   -- function vector.__tostring(a)
+      -- return "(" .. a.x .. ", " .. a.y .. ")"
+   -- end
 
 function vector.distance(a, b)
    return (b - a):len()

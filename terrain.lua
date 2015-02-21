@@ -7,27 +7,61 @@ terrain.newLine = function(self, a, b)
    local result = {}
    result.a = a
    result.b = b
+   result.ahandle = ui:newid()
+   result.bhandle = ui:newid()
    result.p = (a + b) / 2
    result.line = (b - a) / 2
    result.hw = vector.abs(result.line)
    result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
-   result.setA = function(a)
-      result.a = a
-      result.p = (result.a + result.b) / 2
-      result.line = (result.b - result.a) / 2
-      result.hw = vector.abs(result.line)
-      result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
-   end
-   result.setB = function(b)
-      result.b = b
-      result.p = (result.a + result.b) / 2
-      result.line = (result.b - result.a) / 2
-      result.hw = vector.abs(result.line)
-      result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
-   end
-   ui:createDraggable(a, result.setA)
-   ui:createDraggable(b, result.setB)
    table.insert(self, result)
+end
+
+local setA = function(result, a)
+   result.a = a
+   result.p = (result.a + result.b) / 2
+   result.line = (result.b - result.a) / 2
+   result.hw = vector.abs(result.line)
+   result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
+end
+
+local setB = function(result, b)
+   result.b = b
+   result.p = (result.a + result.b) / 2
+   result.line = (result.b - result.a) / 2
+   result.hw = vector.abs(result.line)
+   result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
+end
+
+terrain.pointInRadius = function(self, point, radius)
+   for k, v in ipairs(self) do
+      if vector.lenSq(v.a - point) <= radius * radius and v.a ~= point then
+	 return v.a
+      elseif vector.lenSq(v.b - point) <= radius * radius and v.b ~= point then
+	 return v.b
+      end
+   end
+end
+
+terrain.update = function(self)
+   for k, v in ipairs(self) do
+      local a = ui:handle(v.ahandle, v.a, 7)
+      if a then
+	 setA(v, a)
+      end
+      a = self:pointInRadius(v.a, 7)
+      if a then
+	 setA(v, a)
+      end
+
+      local b = ui:handle(v.bhandle, v.b, 7)
+      if b then
+	 setB(v, b)
+      end
+      b = self:pointInRadius(v.b, 7)
+      if b then
+	 setB(v, b)
+      end
+   end
 end
 
 terrain.draw = function(self)
