@@ -1,73 +1,54 @@
 local ui = {}
 ui.drawList = {}
 
-function ui:draw()
-   while self.drawList[1] do
-      local f = table.remove(self.drawList)
+function ui.draw()
+   while ui.drawList[1] do
+      local f = table.remove(ui.drawList)
       f()
    end
 end
 
-function ui:createDraggable(position, callback)
-   local result = {}
-   result.position = position
+ui.hover = nil
+ui.active = nil
 
-   result.draw = function(self)
-      love.graphics.setColor(80, 150, 255)
-      love.graphics.circle("fill", self.position.x, self.position.y, 5, 10)
-   end
-
-   result.mousePressed = function(self, x, y, button)   
-      callback(self.position)
-   end
-   
-   table.insert(self.elements, result)
-   return result
-end
-
-ui.lastid = 0
-function ui:newid()
-   self.lastid = self.lastid + 1
-   return self.lastid
-end
-
-ui.hoverid = nil
-ui.activeid = nil
-
-function ui:mousepressed(x, y, button)
+function ui.mousepressed(x, y, button)
    if button == 'r' then
-      self.activeid = self.hoverid
+      ui.active = ui.hover
    end
 end
 
-function ui:mousereleased(x, y, button)
+function ui.mousereleased(x, y, button)
    if button == 'r' then
-      self.activeid = nil
+      ui.active = nil
    end
 end
 
-function ui:handle(id, position, radius)
-   local mouse = vector(love.mouse.getX(), love.mouse.getY())
-   if vector.lenSq(position - mouse) <= radius * radius then
-      self:drawWidget(function()
-	    love.graphics.setColor(255, 0, 0)
-	    love.graphics.circle("fill", position.x, position.y, radius, 10)
-      end)
-      self.hoverid = id
-   else
-      self:drawWidget(function()
-	    love.graphics.setColor(80, 150, 255)
-	    love.graphics.circle("fill", position.x, position.y, radius, 10)
-      end)
-   end
+function ui.handle()
+      -- sneaky trick to give widgets their own identity
+   local widget = {}
+   return function(position, radius)
+      local mouse = vector(love.mouse.getPosition())
+      if vector.lenSq(position - mouse) < radius * radius then
+	 ui.drawWidget(function()
+	       love.graphics.setColor(255, 0, 0)
+				    love.graphics.circle("fill", position.x, position.y, radius, 10)
+			      end)
+			      ui.hover = widget
+			   else
+			      ui.drawWidget(function()
+				    love.graphics.setColor(80, 150, 255)
+				    love.graphics.circle("fill", position.x, position.y, radius, 10)
+			      end)
+			   end
 
-   if id == self.activeid then
-      return mouse
+			   if widget == ui.active then
+			      return mouse
+			   end
    end
 end
 
-function ui:drawWidget(drawFunction)
-   table.insert(self.drawList, drawFunction)
+function ui.drawWidget(drawFunction)
+   table.insert(ui.drawList, drawFunction)
 end
 
 return ui

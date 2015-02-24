@@ -7,8 +7,8 @@ terrain.newLine = function(self, a, b)
    local result = {}
    result.a = a
    result.b = b
-   result.ahandle = ui:newid()
-   result.bhandle = ui:newid()
+   result.ahandle = ui.handle()
+   result.bhandle = ui.handle()
    result.p = (a + b) / 2
    result.line = (b - a) / 2
    result.hw = vector.abs(result.line)
@@ -34,9 +34,13 @@ end
 
 terrain.pointInRadius = function(self, point, radius)
    for k, v in ipairs(self) do
-      if vector.lenSq(v.a - point) <= radius * radius and v.a ~= point then
+      local da = vector.lenSq(v.a - point)
+      if da <= radius * radius and da >= 0.1 then
 	 return v.a
-      elseif vector.lenSq(v.b - point) <= radius * radius and v.b ~= point then
+      end
+
+      local db = vector.lenSq(v.b - point)
+      if db <= radius * radius and db >= 0.1 then
 	 return v.b
       end
    end
@@ -44,22 +48,22 @@ end
 
 terrain.update = function(self)
    for k, v in ipairs(self) do
-      local a = ui:handle(v.ahandle, v.a, 7)
+      local a = v.ahandle(v.a, 7)
       if a then
 	 setA(v, a)
-      end
-      a = self:pointInRadius(v.a, 7)
-      if a then
-	 setA(v, a)
+	 local x = self:pointInRadius(v.a, 7)
+	 if x then
+	    setA(v, x)
+	 end
       end
 
-      local b = ui:handle(v.bhandle, v.b, 7)
+      local b = v.bhandle(v.b, 7)
       if b then
 	 setB(v, b)
-      end
-      b = self:pointInRadius(v.b, 7)
-      if b then
-	 setB(v, b)
+	 local x = self:pointInRadius(v.b, 7)
+	 if x then
+	    setB(v, x)
+	 end
       end
    end
 end
