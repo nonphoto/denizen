@@ -15,9 +15,17 @@ ui = require("ui")
 
 require("vector")
 
-local global = {}
+function getMouse()
+   return vector(love.mouse.getPosition())
+end
 
-global.mouse = vector()
+local menu = {}
+menu.modes = {
+   draw = ui.button(),
+   edit = ui.button(),
+   play = ui.button()
+}
+menu.currentMode = "draw"
 
 function love.load()
    love.graphics.setLineWidth(2)
@@ -34,7 +42,12 @@ function love.mousepressed(x, y, button)
 	 love.mousepressed(x, y, 'r')
 	 return
       end
-      lineStart = vector(x, y)
+      local p = terrain:pointInRadius(getMouse(), 7)
+      if p then
+	 lineStart = p
+      else
+	 lineStart = vector(x, y)
+      end
       lineEnd = vector(x, y)
    end
    ui.mousepressed(x, y, button)
@@ -61,10 +74,20 @@ function love.update(dt)
    if love.keyboard.isDown("left")  then player:move(-v,  0) end
    if love.keyboard.isDown("right") then player:move( v,  0) end
    if love.mouse.isDown("l") then
-      local mouse = vector(love.mouse.getPosition())
-      lineEnd = mouse
-      local x = terrain:pointInRadius(mouse, 7)
-      if x then lineEnd = x end
+      local p = terrain:pointInRadius(getMouse(), 7)
+      if p then
+	 lineEnd = p
+      else
+	 lineEnd = getMouse()
+      end
+   end
+
+   if menu.modes.draw(vector(30, 30), 15) then
+      menu.mode = "draw"
+   elseif menu.modes.edit(vector(75, 30), 15) then
+      menu.mode = "edit"
+   elseif menu.modes.play(vector(120, 30), 15) then
+      menu.mode = "play"
    end
    
    terrain:update()
