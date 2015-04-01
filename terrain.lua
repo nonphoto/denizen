@@ -7,8 +7,8 @@ terrain.newLine = function(self, a, b)
    local result = {}
    result.a = a
    result.b = b
-   result.ahandle = ui.button()
-   result.bhandle = ui.button()
+   result.ahandle = ui.button(a)
+   result.bhandle = ui.button(b)
    result.p = (a + b) / 2
    result.line = (b - a) / 2
    result.hw = vector.abs(result.line)
@@ -22,6 +22,7 @@ local setA = function(result, a)
    result.line = (result.b - result.a) / 2
    result.hw = vector.abs(result.line)
    result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
+   result.ahandle.position = a
 end
 
 local setB = function(result, b)
@@ -30,6 +31,7 @@ local setB = function(result, b)
    result.line = (result.b - result.a) / 2
    result.hw = vector.abs(result.line)
    result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
+   result.bhandle.position = b
 end
 
 terrain.pointInRadius = function(self, point, radius)
@@ -47,22 +49,24 @@ terrain.pointInRadius = function(self, point, radius)
 end
 
 terrain.update = function(self)
-   for k, v in ipairs(self) do
-      local a = v.ahandle(v.a, 7)
-      if a then
-	 setA(v, a)
-	 local x = self:pointInRadius(v.a, 7)
-	 if x then
-	    setA(v, x)
+   if menu.currentMode == "edit" then
+      for k, v in ipairs(self) do
+	 local a = v.ahandle()
+	 if a then
+	    setA(v, a)
+	    local x = self:pointInRadius(v.a, 7)
+	    if x then
+	       setA(v, x)
+	    end
 	 end
-      end
 
-      local b = v.bhandle(v.b, 7)
-      if b then
-	 setB(v, b)
-	 local x = self:pointInRadius(v.b, 7)
-	 if x then
-	    setB(v, x)
+	 local b = v.bhandle(v.b, 7)
+	 if b then
+	    setB(v, b)
+	    local x = self:pointInRadius(v.b, 7)
+	    if x then
+	       setB(v, x)
+	    end
 	 end
       end
    end

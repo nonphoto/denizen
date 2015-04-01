@@ -3,8 +3,8 @@ ui.drawList = {}
 
 function ui.draw()
    while ui.drawList[1] do
-      local f = table.remove(ui.drawList)
-      f()
+      local e = table.remove(ui.drawList)
+      e.drawFunction(e.position)
    end
 end
 
@@ -12,43 +12,79 @@ ui.hover = nil
 ui.active = nil
 
 function ui.mousepressed(x, y, button)
-   if button == 'r' then
-      ui.active = ui.hover
-   end
+   ui.active = ui.hover
 end
 
 function ui.mousereleased(x, y, button)
-   if button == 'r' then
-      ui.active = nil
-   end
-end   
+   ui.active = nil
+end
 
-function ui.button()
-   -- sneaky trick to give widgets their own identity
-   local widget = {}
-   return function(position, radius)
-      local mouse = vector(love.mouse.getPosition())
-      if vector.lenSq(position - mouse) < radius * radius then
-	 ui.drawWidget(function()
-	       love.graphics.setColor(255, 0, 0)
-	       love.graphics.circle("fill", position.x, position.y, radius, 20)
-	 end)
-	 ui.hover = widget
-      else
-	 ui.drawWidget(function()
-	       love.graphics.setColor(80, 150, 255)
-	       love.graphics.circle("fill", position.x, position.y, radius, 20)
-	 end)
-      end
-      
-      if widget == ui.active then
-	 return mouse
-      end
+
+function circleHitbox(r)
+   return function(x, p)
+      return vector.lenSq(x - p) <= r * r
    end
 end
 
-function ui.drawWidget(drawFunction)
-   table.insert(ui.drawList, drawFunction)
+function aabbHitbox(hw)
+   return function(x, p)
+      return x.x >= p.x - hw.x
+	 and x.x <= p.x + hw.x
+	 and x.y >= p.y - hw.y
+	 and x.y <= p.y + hw.y
+   end
+end
+
+local defaultHitbox = circleHitbox(7)
+
+local function defaultDrawNormal(position)
+   love.graphics.setColor(100, 190, 230)
+   love.graphics.circle("fill", position.x, position.y, 7, 10)
+end
+
+local function defaultDrawHover(position)
+   love.graphics.setColor(10, 90, 255)
+   love.graphics.circle("fill", position.x, position.y, 7, 10)
+end
+
+local function defaultDrawActive(position)
+   love.graphics.setColor(230, 50, 50)
+   love.graphics.circle("fill", position.x, position.y, 7, 10)
+end
+
+function ui.button(position, hitbox, drawNormal, drawHover, drawActive, mode)
+   local widget = {
+      position = position or vector(),
+      hitbox = hitbox or defaultHitbox,
+      drawNormal = drawNormal or defaultDrawNormal,
+      drawHover = drawHover or defaultDrawHover,
+      drawActive = drawActive or defaultDrawActive,
+      mode = mode or "" -- not used yet
+   }
+   
+   local call = function(widget)
+      if widget == ui.active then
+	 ui.drawWidget(widget.drawActive, widget.position)
+	 return getMouse()
+      else
+	 if widget.hitbox(getMouse(), widget.position) then
+	    ui.drawWidget(widget.drawHover, widget.position)
+	    ui.hover = widget
+	 else
+	    ui.drawWidget(widget.drawNormal, widget.position)
+	 end
+	 return nil
+      end
+   end
+   
+   setmetatable(widget, {__call = call})
+   return widget
+end
+
+function ui.drawWidget(drawFunction, position)
+   assert(type(drawFunction) == "function",
+	  "invalid input: " .. tostring(drawFunction) .. " is not a function")
+   table.insert(ui.drawList, {drawFunction = drawFunction, position = position})
 end
 
 return ui

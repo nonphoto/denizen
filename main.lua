@@ -19,11 +19,11 @@ function getMouse()
    return vector(love.mouse.getPosition())
 end
 
-local menu = {}
+menu = {}
 menu.modes = {
-   draw = ui.button(),
-   edit = ui.button(),
-   play = ui.button()
+   draw = ui.button(vector(20, 20)),
+   edit = ui.button(vector(40, 20)),
+   play = ui.button(vector(60, 20))
 }
 menu.currentMode = "draw"
 
@@ -42,13 +42,16 @@ function love.mousepressed(x, y, button)
 	 love.mousepressed(x, y, 'r')
 	 return
       end
-      local p = terrain:pointInRadius(getMouse(), 7)
-      if p then
-	 lineStart = p
-      else
-	 lineStart = vector(x, y)
+
+      if menu.currentMode == "draw" then
+	 local p = terrain:pointInRadius(getMouse(), 7)
+	 if p then
+	    lineStart = p
+	 else
+	    lineStart = vector(x, y)
+	 end
+	 lineEnd = vector(x, y)
       end
-      lineEnd = vector(x, y)
    end
    ui.mousepressed(x, y, button)
 end
@@ -59,36 +62,35 @@ function love.mousereleased(x, y, button)
 	 love.mousereleased(x, y, 'r')
 	 return
       end
-      terrain:newLine(lineStart, lineEnd)
-      lineStart = nil
-      lineEnd = nil
+      if menu.currentMode == "draw" then
+	 terrain:newLine(lineStart, lineEnd)
+	 lineStart = nil
+	 lineEnd = nil
+      end
    end
    ui.mousereleased(x, y, button)
 end
 
 function love.update(dt)
-   
    local v = 1.5
    if love.keyboard.isDown("up")    then player:move( 0, -v) end
    if love.keyboard.isDown("down")  then player:move( 0,  v) end
    if love.keyboard.isDown("left")  then player:move(-v,  0) end
    if love.keyboard.isDown("right") then player:move( v,  0) end
    if love.mouse.isDown("l") then
-      local p = terrain:pointInRadius(getMouse(), 7)
-      if p then
-	 lineEnd = p
-      else
-	 lineEnd = getMouse()
+      if menu.currentMode == "draw" then
+	 local p = terrain:pointInRadius(getMouse(), 7)
+	 if p then
+	    lineEnd = p
+	 else
+	    lineEnd = getMouse()
+	 end
       end
    end
 
-   if menu.modes.draw(vector(30, 30), 15) then
-      menu.mode = "draw"
-   elseif menu.modes.edit(vector(75, 30), 15) then
-      menu.mode = "edit"
-   elseif menu.modes.play(vector(120, 30), 15) then
-      menu.mode = "play"
-   end
+   if menu.modes.draw() then menu.currentMode = "draw" end
+   if menu.modes.edit() then menu.currentMode = "edit" end
+   if menu.modes.play() then menu.currentMode = "play" end
    
    terrain:update()
    player:update()
