@@ -49,7 +49,7 @@ terrain.pointInRadius = function(self, point, radius)
 end
 
 terrain.update = function(self)
-   if global.currentMode == "edit" then
+   if currentMode == "edit" then
       for k, v in ipairs(self) do
 	 local a = v.ahandle()
 	 if a then
@@ -94,71 +94,15 @@ terrain.draw = function(self)
    end
 end
 
-terrain.collideSolid = function(self, position, halfwidth)
-   local p = position
-   local hw = halfwidth
-   
-   local result = vector()
-   for k, v in ipairs(self) do
-
-      -- x axis
-      local xaxis = false
-      local dx = v.p.x - p.x
-      local wx = v.hw.x + hw.x
-      if math.abs(dx) < wx then
-	 if dx > 0 then
-	    xaxis = dx - wx
-	 else
-	    xaxis = dx + wx
-	 end
-      end
-
-      -- y axis
-      local yaxis = false
-      local dy = v.p.y - p.y
-      local wy = v.hw.y + hw.y
-      if math.abs(dy) < wy then
-	 if dy > 0 then
-	    yaxis = dy - wy
-	 else
-	    yaxis = dy + wy
-	 end
-      end
-
-      -- hypotenuse
-      local haxis = false
-      local dh = vector.len((p - v.p):projectOn(v.normal))
-      local wh = vector.len((hw):projectOn(vector.abs(v.normal)))
-      if dh < wh then
-	 if dh > 0 then
-	    haxis = wh - dh
-	 else
-	    haxis = dh + wh
-	 end
-      end
-
-      if xaxis and yaxis and haxis then
-	 v.color = true
-	 local a = math.min(math.abs(haxis), math.min(math.abs(xaxis), (math.abs(yaxis))))
-	 if a == math.abs(xaxis) then
-	    p.x = p.x + xaxis
-	 elseif a == math.abs(yaxis) then
-	    p.y = p.y + yaxis
-	 elseif a == math.abs(haxis) then
-	    p = p + v.normal * haxis
-	 else
-	    -- impossible
-	 end
-      end
-   end
-   
-   return p - position
+terrain.delete = function(self, id)
+   self[id] = nil
 end
 
 terrain.collide = function(self, position, halfwidth, colliding)
    local p = vector(position.x, position.y)
    local hw = halfwidth
    local state = "none"
+   local wallid = nil
    
    local result = vector()
    for k, v in ipairs(self) do
@@ -202,6 +146,7 @@ terrain.collide = function(self, position, halfwidth, colliding)
       
       if xaxis and yaxis and haxis then
 	 v.color = true
+	 wallid = k
 	 state = "intersecting"
 	 local a = math.min(math.abs(haxis), math.min(math.abs(xaxis), (math.abs(yaxis))))
 	 if a == math.abs(xaxis) and math.sign(xaxis) == math.sign(v.normal.x) then
@@ -217,7 +162,68 @@ terrain.collide = function(self, position, halfwidth, colliding)
       end
    end
    
-   return state, p - position
+   return state, wallid, p - position
 end
 
 return terrain
+
+-- terrain.collideSolid = function(self, position, halfwidth)
+--    local p = position
+--    local hw = halfwidth
+   
+--    local result = vector()
+--    for k, v in ipairs(self) do
+
+--       -- x axis
+--       local xaxis = false
+--       local dx = v.p.x - p.x
+--       local wx = v.hw.x + hw.x
+--       if math.abs(dx) < wx then
+-- 	 if dx > 0 then
+-- 	    xaxis = dx - wx
+-- 	 else
+-- 	    xaxis = dx + wx
+-- 	 end
+--       end
+
+--       -- y axis
+--       local yaxis = false
+--       local dy = v.p.y - p.y
+--       local wy = v.hw.y + hw.y
+--       if math.abs(dy) < wy then
+-- 	 if dy > 0 then
+-- 	    yaxis = dy - wy
+-- 	 else
+-- 	    yaxis = dy + wy
+-- 	 end
+--       end
+
+--       -- hypotenuse
+--       local haxis = false
+--       local dh = vector.len((p - v.p):projectOn(v.normal))
+--       local wh = vector.len((hw):projectOn(vector.abs(v.normal)))
+--       if dh < wh then
+-- 	 if dh > 0 then
+-- 	    haxis = wh - dh
+-- 	 else
+-- 	    haxis = dh + wh
+-- 	 end
+--       end
+
+--       if xaxis and yaxis and haxis then
+-- 	 v.color = true
+-- 	 local a = math.min(math.abs(haxis), math.min(math.abs(xaxis), (math.abs(yaxis))))
+-- 	 if a == math.abs(xaxis) then
+-- 	    p.x = p.x + xaxis
+-- 	 elseif a == math.abs(yaxis) then
+-- 	    p.y = p.y + yaxis
+-- 	 elseif a == math.abs(haxis) then
+-- 	    p = p + v.normal * haxis
+-- 	 else
+-- 	    -- impossible
+-- 	 end
+--       end
+--    end
+   
+--    return p - position
+-- end

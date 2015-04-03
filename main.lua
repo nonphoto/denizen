@@ -15,27 +15,34 @@ ui = require("ui")
 
 require("vector")
 
-function getMouse()
+
+currentMode = "draw"
+
+mouse = function()
    return vector(love.mouse.getPosition())
 end
 
-global= {}
-global.currentMode = "draw"
 
 function love.load()
    love.graphics.setLineWidth(2)
    -- love.graphics.setDefaultFilter("nearest", "nearest")
 end
 
+
+
 function love.keypressed(key)
    if key == "escape" then love.event.quit() end
 end
 
+
+
 function love.keyreleased(key)
-   if key == "1" then global.currentMode = "draw" end
-   if key == "2" then global.currentMode = "edit" end
-   if key == "3" then global.currentMode = "delete" end
+   if key == "1" then currentMode = "draw" end
+   if key == "2" then currentMode = "edit" end
+   if key == "3" then currentMode = "delete" end
 end
+
+
 
 function love.mousepressed(x, y, button)
    if button == 'l' then
@@ -44,8 +51,8 @@ function love.mousepressed(x, y, button)
 	 return
       end
 
-      if global.currentMode == "draw" then
-	 local p = terrain:pointInRadius(getMouse(), 7)
+      if currentMode == "draw" then
+	 local p = terrain:pointInRadius(mouse(), 10)
 	 if p then
 	    lineStart = p
 	 else
@@ -57,13 +64,15 @@ function love.mousepressed(x, y, button)
    ui.mousepressed(x, y, button)
 end
 
+
+
 function love.mousereleased(x, y, button)
    if button == 'l' then
       if love.keyboard.isDown("lctrl") then
 	 love.mousereleased(x, y, 'r')
 	 return
       end
-      if global.currentMode == "draw" then
+      if currentMode == "draw" then
 	 terrain:newLine(lineStart, lineEnd)
 	 lineStart = nil
 	 lineEnd = nil
@@ -72,19 +81,27 @@ function love.mousereleased(x, y, button)
    ui.mousereleased(x, y, button)
 end
 
+
+
 function love.update(dt)
    local v = 1.5
    if love.keyboard.isDown("up")    then player:move( 0, -v) end
    if love.keyboard.isDown("down")  then player:move( 0,  v) end
    if love.keyboard.isDown("left")  then player:move(-v,  0) end
    if love.keyboard.isDown("right") then player:move( v,  0) end
+
    if love.mouse.isDown("l") then
-      if global.currentMode == "draw" then
-	 local p = terrain:pointInRadius(getMouse(), 7)
+      if currentMode == "draw" then
+	 local p = terrain:pointInRadius(mouse(), 10)
 	 if p then
 	    lineEnd = p
 	 else
-	    lineEnd = getMouse()
+	    lineEnd = mouse()
+	 end
+      elseif currentMode == "delete" then
+	 local _, wallid, _ = terrain:collide(mouse(), vector(5, 5), false)
+	 if wallid then
+	    terrain:delete(wallid)
 	 end
       end
    end
@@ -92,6 +109,8 @@ function love.update(dt)
    terrain:update()
    player:update()
 end
+
+
 
 function love.draw()
    terrain:draw()
@@ -102,21 +121,21 @@ function love.draw()
    player:draw()
    ui.draw()
 
-   if global.currentMode == "draw" then
+   if currentMode == "draw" then
       love.graphics.setColor(255, 255, 255, 255)
    else
       love.graphics.setColor(255, 255, 255, 100)
    end
    love.graphics.print("[1]: Draw", 10, 10)
 
-   if global.currentMode == "edit" then
+   if currentMode == "edit" then
       love.graphics.setColor(255, 255, 255, 255)
    else
       love.graphics.setColor(255, 255, 255, 100)
    end
    love.graphics.print("[2]: Edit", 10, 25)
 
-   if global.currentMode == "delete" then
+   if currentMode == "delete" then
       love.graphics.setColor(255, 255, 255, 255)
    else
       love.graphics.setColor(255, 255, 255, 100)

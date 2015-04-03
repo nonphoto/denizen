@@ -10,7 +10,7 @@ entity.a = vector()
 entity.cs = "none"
 
 entity.update = function(self)
-   local collideState, projection = terrain:collide(self.p, self.hw, false)
+   local collideState, wallid, projection = terrain:collide(self.p, self.hw, false)
    if collideState == "none" then
       self.cs = "none"
    elseif collideState == "intersecting" then
