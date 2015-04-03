@@ -49,7 +49,7 @@ terrain.pointInRadius = function(self, point, radius)
 end
 
 terrain.update = function(self)
-   if menu.currentMode == "edit" then
+   if global.currentMode == "edit" then
       for k, v in ipairs(self) do
 	 local a = v.ahandle()
 	 if a then

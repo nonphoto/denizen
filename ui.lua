@@ -4,7 +4,10 @@ ui.drawList = {}
 function ui.draw()
    while ui.drawList[1] do
       local e = table.remove(ui.drawList)
-      e.drawFunction(e.position)
+      love.graphics.push()
+      love.graphics.translate(e.position.x, e.position.y)
+      e.drawFunction()
+      love.graphics.pop()
    end
 end
 
@@ -26,7 +29,7 @@ function circleHitbox(r)
    end
 end
 
-function aabbHitbox(hw)
+function rectHitbox(hw)
    return function(x, p)
       return x.x >= p.x - hw.x
 	 and x.x <= p.x + hw.x
@@ -37,29 +40,28 @@ end
 
 local defaultHitbox = circleHitbox(7)
 
-local function defaultDrawNormal(position)
+local function defaultDrawNormal()
    love.graphics.setColor(100, 190, 230)
-   love.graphics.circle("fill", position.x, position.y, 7, 10)
+   love.graphics.circle("fill", 0, 0, 5, 20)
 end
 
 local function defaultDrawHover(position)
    love.graphics.setColor(10, 90, 255)
-   love.graphics.circle("fill", position.x, position.y, 7, 10)
+   love.graphics.circle("fill", 0, 0, 5, 20)
 end
 
 local function defaultDrawActive(position)
    love.graphics.setColor(230, 50, 50)
-   love.graphics.circle("fill", position.x, position.y, 7, 10)
+   love.graphics.circle("fill", 0, 0, 5, 20)
 end
 
-function ui.button(position, hitbox, drawNormal, drawHover, drawActive, mode)
+function ui.button(position, hitbox, drawNormal, drawHover, drawActive)
    local widget = {
       position = position or vector(),
       hitbox = hitbox or defaultHitbox,
       drawNormal = drawNormal or defaultDrawNormal,
       drawHover = drawHover or defaultDrawHover,
       drawActive = drawActive or defaultDrawActive,
-      mode = mode or "" -- not used yet
    }
    
    local call = function(widget)

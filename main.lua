@@ -19,13 +19,8 @@ function getMouse()
    return vector(love.mouse.getPosition())
 end
 
-menu = {}
-menu.modes = {
-   draw = ui.button(vector(20, 20)),
-   edit = ui.button(vector(40, 20)),
-   play = ui.button(vector(60, 20))
-}
-menu.currentMode = "draw"
+global= {}
+global.currentMode = "draw"
 
 function love.load()
    love.graphics.setLineWidth(2)
@@ -36,6 +31,12 @@ function love.keypressed(key)
    if key == "escape" then love.event.quit() end
 end
 
+function love.keyreleased(key)
+   if key == "1" then global.currentMode = "draw" end
+   if key == "2" then global.currentMode = "edit" end
+   if key == "3" then global.currentMode = "delete" end
+end
+
 function love.mousepressed(x, y, button)
    if button == 'l' then
       if love.keyboard.isDown("lctrl") then
@@ -43,7 +44,7 @@ function love.mousepressed(x, y, button)
 	 return
       end
 
-      if menu.currentMode == "draw" then
+      if global.currentMode == "draw" then
 	 local p = terrain:pointInRadius(getMouse(), 7)
 	 if p then
 	    lineStart = p
@@ -62,7 +63,7 @@ function love.mousereleased(x, y, button)
 	 love.mousereleased(x, y, 'r')
 	 return
       end
-      if menu.currentMode == "draw" then
+      if global.currentMode == "draw" then
 	 terrain:newLine(lineStart, lineEnd)
 	 lineStart = nil
 	 lineEnd = nil
@@ -78,7 +79,7 @@ function love.update(dt)
    if love.keyboard.isDown("left")  then player:move(-v,  0) end
    if love.keyboard.isDown("right") then player:move( v,  0) end
    if love.mouse.isDown("l") then
-      if menu.currentMode == "draw" then
+      if global.currentMode == "draw" then
 	 local p = terrain:pointInRadius(getMouse(), 7)
 	 if p then
 	    lineEnd = p
@@ -87,10 +88,6 @@ function love.update(dt)
 	 end
       end
    end
-
-   if menu.modes.draw() then menu.currentMode = "draw" end
-   if menu.modes.edit() then menu.currentMode = "edit" end
-   if menu.modes.play() then menu.currentMode = "play" end
    
    terrain:update()
    player:update()
@@ -104,6 +101,28 @@ function love.draw()
    end
    player:draw()
    ui.draw()
+
+   if global.currentMode == "draw" then
+      love.graphics.setColor(255, 255, 255, 255)
+   else
+      love.graphics.setColor(255, 255, 255, 100)
+   end
+   love.graphics.print("[1]: Draw", 10, 10)
+
+   if global.currentMode == "edit" then
+      love.graphics.setColor(255, 255, 255, 255)
+   else
+      love.graphics.setColor(255, 255, 255, 100)
+   end
+   love.graphics.print("[2]: Edit", 10, 25)
+
+   if global.currentMode == "delete" then
+      love.graphics.setColor(255, 255, 255, 255)
+   else
+      love.graphics.setColor(255, 255, 255, 100)
+   end
+   love.graphics.print("[3]: Delete", 10, 40)
+   
    love.graphics.setColor(255, 255, 255, 100)
-   love.graphics.print(love.timer.getFPS(), 10, 10)
+   love.graphics.print(love.timer.getFPS(), 200, 10)
 end
