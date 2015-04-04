@@ -67,9 +67,9 @@ function ui.button(position, hitbox, drawNormal, drawHover, drawActive)
    local call = function(widget)
       if widget == ui.active then
 	 ui.drawWidget(widget.drawActive, widget.position)
-	 return mouse.screen()
+	 return mouse.world()
       else
-	 if widget.hitbox(mouse.screen(), widget.position) then
+	 if widget.hitbox(mouse.world(), widget.position) then
 	    ui.drawWidget(widget.drawHover, widget.position)
 	    ui.hover = widget
 	 else

@@ -72,9 +72,9 @@ function love.draw()
       love.graphics.line(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y)
    end
    player:draw()
-   camera:unset()
-
    ui.draw()
+
+   camera:unset()
    
    if currentMode == "draw" then
       love.graphics.setColor(255, 255, 255, 255)

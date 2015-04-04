@@ -15,6 +15,7 @@ end
 
 function camera:unset()
    love.graphics.pop()
+   love.graphics.setColor(255, 255, 255, 255)
    love.graphics.rectangle(
       "fill",
       love.graphics.getWidth() / 2 - 1,
