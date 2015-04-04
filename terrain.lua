@@ -95,7 +95,7 @@ terrain.draw = function(self)
 end
 
 terrain.delete = function(self, id)
-   self[id] = nil
+   table.remove(self, id)
 end
 
 terrain.collide = function(self, position, halfwidth, colliding)
