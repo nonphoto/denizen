@@ -1,7 +1,7 @@
 require("vector")
 
 entity = {}
-entity.p = vector(200, 200)
+entity.p = vector()
 entity.pp = vector(entity.p.x, entity.p.y)
 entity.w = vector(50, 100)
 entity.hw = entity.w / 2
@@ -10,6 +10,7 @@ entity.a = vector()
 entity.cs = "none"
 
 entity.update = function(self)
+   -- Test for a collision with the terrain and project out of it if necessary
    local collideState, wallid, projection = terrain:collide(self.p, self.hw, false)
    if collideState == "none" then
       self.cs = "none"
@@ -21,10 +22,13 @@ entity.update = function(self)
 	 self.cs = "projected"
       end
    end
-
+   
+   -- Verlet integration: entities keep their momentum
    local v = self.p - self.pp
    self.pp.x = self.p.x
    self.pp.y = self.p.y
+
+   -- Friction
    self.p = self.p + (v * 0.9)
 end
 
