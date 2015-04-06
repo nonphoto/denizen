@@ -90,6 +90,9 @@ function love.draw()
    love.graphics.print("[2]: Edit", 10, 25)
 
    if currentMode == "delete" then
+      love.graphics.setColor(255, 0, 0, 255)
+      local x, y = mouse.screen():unpack()
+      love.graphics.rectangle("fill", x - 5, y - 5, 10, 10)
       love.graphics.setColor(255, 255, 255, 255)
    else
       love.graphics.setColor(255, 255, 255, 100)
