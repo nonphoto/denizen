@@ -16,7 +16,6 @@ ui = require("ui")
 
 require("vector")
 
-
 currentMode = "draw"
 
 mouse = {}
@@ -35,10 +34,10 @@ end
 
 function love.update(dt)
    local v = 1.5
-   if love.keyboard.isDown("up")    then player:move( 0, -v) end
-   if love.keyboard.isDown("down")  then player:move( 0,  v) end
-   if love.keyboard.isDown("left")  then player:move(-v,  0) end
-   if love.keyboard.isDown("right") then player:move( v,  0) end
+   if love.keyboard.isDown("up") or love.keyboard.isDown("w")    then player:move( 0, -v) end
+   if love.keyboard.isDown("down") or love.keyboard.isDown("s")  then player:move( 0,  v) end
+   if love.keyboard.isDown("left") or love.keyboard.isDown("a")  then player:move(-v,  0) end
+   if love.keyboard.isDown("right") or love.keyboard.isDown("d") then player:move( v,  0) end
 
    
    if love.mouse.isDown("l") then
@@ -50,9 +49,9 @@ function love.update(dt)
 	    lineEnd = mouse.world()
 	 end
       elseif currentMode == "delete" then
-	 local _, wallid, _ = terrain:collide(mouse.world(), vector(5, 5), false)
-	 if wallid then
-	    terrain:delete(wallid)
+	 local _, wall, _ = terrain:collide(mouse.world(), vector(5, 5))
+	 if wall then
+	    terrain:deleteWall(wall)
 	 end
       end
    end
@@ -96,6 +95,13 @@ function love.draw()
       love.graphics.setColor(255, 255, 255, 100)
    end
    love.graphics.print("[3]: Delete", 10, 40)
+
+   if currentMode == "image" then
+      love.graphics.setColor(255, 255, 255, 255)
+   else
+      love.graphics.setColor(255, 255, 255, 100)
+   end
+   love.graphics.print("[4]: Image", 10, 55)
    
    love.graphics.setColor(255, 255, 255, 100)
    love.graphics.print(love.timer.getFPS(), 200, 10)
@@ -109,6 +115,7 @@ function love.keyreleased(key)
    if key == "1" then currentMode = "draw" end
    if key == "2" then currentMode = "edit" end
    if key == "3" then currentMode = "delete" end
+   if key == "4" then currentMode = "image" end
 end
 
 function love.mousepressed(x, y, button)
@@ -140,12 +147,15 @@ function love.mousereleased(x, y, button)
 	 return
       end
       if currentMode == "draw" then
-	 terrain:newLine(lineStart, lineEnd)
+	 terrain:newWall(lineStart, lineEnd)
 	 lineStart = nil
 	 lineEnd = nil
+      elseif currentMode == "image" then
+	    -- terrain:newTexture(camera:toWorldSpace(vector(x, y)))
       end
+      ui.mousereleased(x, y, button)
    end
-   ui.mousereleased(x, y, button)
 end
 
+   
    

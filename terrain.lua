@@ -2,8 +2,9 @@ require("vector")
 require("util")
 
 local terrain = {}
+terrain.walls = {}
 
-terrain.newLine = function(self, a, b)
+function terrain:newWall(a, b)
    local result = {}
    result.a = a
    result.b = b
@@ -13,29 +14,33 @@ terrain.newLine = function(self, a, b)
    result.line = (b - a) / 2
    result.hw = vector.abs(result.line)
    result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
-   table.insert(self, result)
+   table.insert(self.walls, result)
 end
 
-local setA = function(result, a)
-   result.a = a
-   result.p = (result.a + result.b) / 2
-   result.line = (result.b - result.a) / 2
-   result.hw = vector.abs(result.line)
-   result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
-   result.ahandle.position = a
+local setA = function(wall, a)
+   wall.a = a
+   wall.p = (wall.a + wall.b) / 2
+   wall.line = (wall.b - wall.a) / 2
+   wall.hw = vector.abs(wall.line)
+   wall.normal = -1 * vector.normalize(vector.perpendicular(wall.line))
+   wall.ahandle.position = a
 end
 
-local setB = function(result, b)
-   result.b = b
-   result.p = (result.a + result.b) / 2
-   result.line = (result.b - result.a) / 2
-   result.hw = vector.abs(result.line)
-   result.normal = -1 * vector.normalize(vector.perpendicular(result.line))
-   result.bhandle.position = b
+local setB = function(wall, b)
+   wall.b = b
+   wall.p = (wall.a + wall.b) / 2
+   wall.line = (wall.b - wall.a) / 2
+   wall.hw = vector.abs(wall.line)
+   wall.normal = -1 * vector.normalize(vector.perpendicular(wall.line))
+   wall.bhandle.position = b
 end
 
-terrain.pointInRadius = function(self, point, radius)
-   for k, v in ipairs(self) do
+function terrain:deleteWall(wall)
+   wall.deleted = true
+end
+
+function terrain:pointInRadius(point, radius)
+   for k, v in ipairs(self.walls) do
       local da = vector.lenSq(v.a - point)
       if da <= radius * radius and da >= 0.1 then
 	 return v.a
@@ -48,9 +53,12 @@ terrain.pointInRadius = function(self, point, radius)
    end
 end
 
-terrain.update = function(self)
-   if currentMode == "edit" then
-      for k, v in ipairs(self) do
+function terrain:update()
+   for k, v in ipairs(self.walls) do
+      if v.deleted then
+	 table.remove(self.walls, k)
+      end
+      if currentMode == "edit" then
 	 local a = v.ahandle()
 	 if a then
 	    setA(v, a)
@@ -72,8 +80,8 @@ terrain.update = function(self)
    end
 end
 
-terrain.draw = function(self)
-   for k, v in ipairs(self) do
+function terrain:draw()
+   for k, v in ipairs(self.walls) do
       if v.color then
 	 love.graphics.setColor(255, 0, 0)
 	 v.color = false
@@ -94,18 +102,14 @@ terrain.draw = function(self)
    end
 end
 
-terrain.delete = function(self, id)
-   table.remove(self, id)
-end
-
-terrain.collide = function(self, position, halfwidth, colliding)
+function terrain:collide(position, halfwidth)
    local p = vector(position.x, position.y)
    local hw = halfwidth
    local state = "none"
-   local wallid = nil
+   local wall = nil
    
    local result = vector()
-   for k, v in ipairs(self) do
+   for k, v in ipairs(self.walls) do
 
       -- x axis
       local xaxis = false
@@ -146,7 +150,7 @@ terrain.collide = function(self, position, halfwidth, colliding)
       
       if xaxis and yaxis and haxis then
 	 v.color = true
-	 wallid = k
+	 wall = v
 	 state = "intersecting"
 	 local a = math.min(math.abs(haxis), math.min(math.abs(xaxis), (math.abs(yaxis))))
 	 if a == math.abs(xaxis) and math.sign(xaxis) == math.sign(v.normal.x) then
@@ -162,7 +166,7 @@ terrain.collide = function(self, position, halfwidth, colliding)
       end
    end
    
-   return state, wallid, p - position
+   return state, wall, p - position
 end
 
 return terrain

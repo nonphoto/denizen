@@ -11,7 +11,7 @@ entity.cs = "none"
 
 entity.update = function(self)
    -- Test for a collision with the terrain and project out of it if necessary
-   local collideState, wallid, projection = terrain:collide(self.p, self.hw, false)
+   local collideState, wall, projection = terrain:collide(self.p, self.hw)
    if collideState == "none" then
       self.cs = "none"
    elseif collideState == "intersecting" then
