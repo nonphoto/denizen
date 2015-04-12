@@ -10,6 +10,7 @@ end
 
 inspect = require("inspect")
 terrain = require("terrain")
+scene = require("scene")
 player = require("entity")
 camera = require("camera")
 ui = require("ui")
@@ -65,6 +66,7 @@ end
 
 function love.draw()
    camera:set()
+   scene:draw()
    terrain:draw()
    if lineStart then
       love.graphics.setColor(255, 255, 255, 100)
@@ -154,7 +156,7 @@ function love.mousereleased(x, y, button)
 	 lineStart = nil
 	 lineEnd = nil
       elseif currentMode == "image" then
-	    -- terrain:newTexture(camera:toWorldSpace(vector(x, y)))
+	 scene:newImage("missing.png", camera:toWorldSpace(vector(x, y)))
       end
       ui.mousereleased(x, y, button)
    end
