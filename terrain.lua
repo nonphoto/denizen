@@ -39,6 +39,16 @@ function terrain:deleteWall(wall)
    wall.deleted = true
 end
 
+function terrain:write()
+      --   love.filesystem.write("terrain.sav", serialize(self.walls))
+end
+
+function terrain:read()
+   if love.filesystem.exists("terrain.sav") then
+	 -- self.walls = love.filesystem.read("terrain.sav")
+   end
+end
+   
 function terrain:pointInRadius(point, radius)
    for k, v in ipairs(self.walls) do
       local da = vector.lenSq(v.a - point)

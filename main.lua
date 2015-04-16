@@ -28,12 +28,35 @@ mouse.world = function()
    return camera:toWorldSpace(mouse.screen())
 end
 
+function bang()
+      --print("!")
+   return "!"
+end
+
+function quit()
+   love.event.quit()
+end
+
 function love.load()
    love.graphics.setLineWidth(2)
    -- love.graphics.setDefaultFilter("nearest", "nearest")
+
+   channel = love.thread.getChannel("console");
+   thread = love.thread.newThread("console.lua");
+   thread:start();
+
+   terrain:read()
 end
 
 function love.update(dt)
+   while channel:getCount() > 0 do
+      local value = channel:pop()
+      if value then
+	 local f = loadstring("return " .. value)
+	 print(f())
+      end
+   end
+   
    local v = 1.5
    if love.keyboard.isDown("up") or love.keyboard.isDown("w")    then player:move( 0, -v) end
    if love.keyboard.isDown("down") or love.keyboard.isDown("s")  then player:move( 0,  v) end
@@ -162,5 +185,10 @@ function love.mousereleased(x, y, button)
    end
 end
 
+function love.quit()
+   terrain:write()
+end
+
    
    
+      
