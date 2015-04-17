@@ -40,12 +40,22 @@ function terrain:deleteWall(wall)
 end
 
 function terrain:write()
-      --   love.filesystem.write("terrain.sav", serialize(self.walls))
+   local s = "return {"
+   for k, v in ipairs(self.walls) do
+      s = s .. "{{" .. v.a.x .. "," .. v.a.y .. "},{" .. v.b.x .. "," .. v.b.y .. "}},"
+   end
+   s = s .. "}"
+      
+   love.filesystem.write("terrain.sav", s)
 end
 
 function terrain:read()
    if love.filesystem.exists("terrain.sav") then
-	 -- self.walls = love.filesystem.read("terrain.sav")
+      local points = loadstring(love.filesystem.read("terrain.sav"))()
+      self.walls = {}
+      for k, v in ipairs(points) do
+	 self:newWall(vector(v[1][1], v[1][2]), vector(v[2][1], v[2][2]))
+      end
    end
 end
    

@@ -29,3 +29,23 @@ function map(func, array)
    end
    return new_array
 end
+
+function serialize(o)
+   print(type(o))
+   local s = ""
+   if type(o) == "number" then
+      s = s .. o
+   elseif type(o) == "string" then
+      s = s .. string.format("%q", o)
+   elseif type(o) == "table" then
+      s = s .. "{/n"
+      for k,v in pairs(o) do
+	 s = s .. "  ", k, " = "
+	 s = s .. serialize(v) .. ",/n"
+      end
+      s = s .. "}\n"
+   else
+      error("cannot serialize a " .. type(o))
+   end
+   return s
+end

@@ -1,6 +1,3 @@
-
-
-
 local channel = love.thread.getChannel("console")
 local s = ""
 while true do
