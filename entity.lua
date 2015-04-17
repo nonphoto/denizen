@@ -30,6 +30,11 @@ entity.update = function(self)
 
    -- Friction
    self.p = self.p + (v * 0.9)
+
+   -- Gravity
+   if gravity then
+      self.p.y = self.p.y + 1
+   end
 end
 
 entity.draw = function(self)
@@ -48,6 +53,11 @@ entity.move = function(self, x, y)
       self.p.x = self.p.x + (x or 0)
       self.p.y = self.p.y + (y or 0)
    end
+end
+
+entity.reset = function(self)
+   self.p = vector()
+   self.pp = vector()
 end
 
 return entity

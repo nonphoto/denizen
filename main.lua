@@ -18,6 +18,7 @@ ui = require("ui")
 require("vector")
 
 currentMode = "draw"
+gravity = false
 
 mouse = {}
 mouse.screen = function()
@@ -29,7 +30,7 @@ mouse.world = function()
 end
 
 function bang()
-      --print("!")
+   --print("!")
    return "!"
 end
 
@@ -144,6 +145,8 @@ function love.keyreleased(key)
    if key == "2" then currentMode = "edit" end
    if key == "3" then currentMode = "delete" end
    if key == "4" then currentMode = "image" end
+   if key == "g" then gravity = not gravity end
+   if key == "k" then player:reset() end
 end
 
 function love.mousepressed(x, y, button)
