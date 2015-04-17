@@ -186,7 +186,8 @@ function love.mousereleased(x, y, button)
 end
 
 function love.quit()
-   terrain:write()
+   terrain:write("quit.sav")
+   print()
 end
 
    

@@ -39,19 +39,25 @@ function terrain:deleteWall(wall)
    wall.deleted = true
 end
 
-function terrain:write()
+local lastFileName = "quit.sav"
+
+function terrain:write(filename)
+   filename = filename or lastFileName
+   lastFileName = filename or lastFileName
+   
    local s = "return {"
    for k, v in ipairs(self.walls) do
       s = s .. "{{" .. v.a.x .. "," .. v.a.y .. "},{" .. v.b.x .. "," .. v.b.y .. "}},"
    end
    s = s .. "}"
       
-   love.filesystem.write("terrain.sav", s)
+   love.filesystem.write(filename, s)
 end
 
-function terrain:read()
-   if love.filesystem.exists("terrain.sav") then
-      local points = loadstring(love.filesystem.read("terrain.sav"))()
+function terrain:read(filename)
+   filename = filename or lastFileName
+   if love.filesystem.exists(filename) then
+      local points = loadstring(love.filesystem.read(filename))()
       self.walls = {}
       for k, v in ipairs(points) do
 	 self:newWall(vector(v[1][1], v[1][2]), vector(v[2][1], v[2][2]))
