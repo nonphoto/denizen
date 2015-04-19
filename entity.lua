@@ -9,7 +9,7 @@ entity.v = vector()
 entity.a = vector()
 entity.cs = "none"
 
-entity.update = function(self)
+function entity:update()
    -- Test for a collision with the terrain and project out of it if necessary
    local collideState, wall, projection = terrain:collide(self.p, self.hw)
    if collideState == "none" then
@@ -37,7 +37,7 @@ entity.update = function(self)
    end
 end
 
-entity.draw = function(self)
+function entity:draw()
    love.graphics.setColor(255, 255, 255, 100)
    love.graphics.rectangle("fill",
 			   self.p.x - self.hw.x,
@@ -46,7 +46,14 @@ entity.draw = function(self)
 			   self.w.y)
 end
 
-entity.move = function(self, x, y)
+function entity:jump()
+   if self.cs == "projected" then
+      print("!")
+      self.pp.y = self.pp.y + 10
+   end
+end
+
+function entity:move(x, y)
    if type(x) == "table" then
       self.p = self.p + x
    else
@@ -55,7 +62,7 @@ entity.move = function(self, x, y)
    end
 end
 
-entity.reset = function(self)
+function entity:reset()
    self.p = vector()
    self.pp = vector()
 end
