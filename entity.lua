@@ -8,6 +8,7 @@ entity.hw = entity.w / 2
 entity.v = vector()
 entity.a = vector()
 entity.cs = "none"
+entity.canJump = false
 
 function entity:update()
    -- Test for a collision with the terrain and project out of it if necessary
@@ -21,6 +22,10 @@ function entity:update()
 	 self.p = self.p + projection
 	 self.cs = "projected"
       end
+   end
+
+   if self.cs == "projected" and projection:normalize().y < -0.5 then
+      self.canJump = true
    end
    
    -- Verlet integration: entities keep their momentum
@@ -47,9 +52,9 @@ function entity:draw()
 end
 
 function entity:jump()
-   if self.cs == "projected" then
-      print("!")
+   if self.canJump then
       self.pp.y = self.pp.y + 10
+      self.canJump = false
    end
 end
 
