@@ -24,6 +24,7 @@ function entity:update()
       end
    end
 
+   -- Only allow jumping on slopes that aren't steeper than 45 degrees
    if self.cs == "projected" and projection:normalize().y < -0.5 then
       self.canJump = true
    end
@@ -53,7 +54,7 @@ end
 
 function entity:jump()
    if self.canJump then
-      self.pp.y = self.pp.y + 10
+      self.pp.y = self.pp.y + 15
       self.canJump = false
    end
 end
