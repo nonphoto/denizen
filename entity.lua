@@ -23,7 +23,8 @@ function entity:update()
 	 self.cs = "projected"
       end
    end
-
+   -- BUG: entities pass through all walls when intersecting, not just the first wall it intersected
+   
    -- Only allow jumping on slopes that aren't steeper than 45 degrees
    if self.cs == "projected" and projection:normalize().y < -0.5 then
       self.canJump = true
@@ -54,6 +55,7 @@ end
 
 function entity:jump()
    if self.canJump then
+      -- TODO: function to change velocity
       self.pp.y = self.pp.y + 15
       self.canJump = false
    end

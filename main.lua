@@ -63,7 +63,6 @@ function love.update(dt)
    if love.keyboard.isDown("down") or love.keyboard.isDown("s")  then player:move( 0,  v) end
    if love.keyboard.isDown("left") or love.keyboard.isDown("a")  then player:move(-v,  0) end
    if love.keyboard.isDown("right") or love.keyboard.isDown("d") then player:move( v,  0) end
-   --  if love.keyboard.isDown(" ") then player:jump() end
    
    if love.mouse.isDown("l") then
       if currentMode == "draw" then
@@ -100,7 +99,8 @@ function love.draw()
    ui.draw()
 
    camera:unset()
-   
+
+   -- TODO: Find a way to make this less terrible
    if currentMode == "draw" then
       love.graphics.setColor(255, 255, 255, 255)
    else
@@ -169,6 +169,7 @@ function love.mousepressed(x, y, button)
 	 lineEnd = m
       end
    end
+   
    ui.mousepressed(x, y, button)
 end
 
