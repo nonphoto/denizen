@@ -8,28 +8,34 @@ entity.hw = entity.w / 2
 entity.v = vector()
 entity.a = vector()
 entity.cs = "none"
-entity.canJump = false
+entity.cj = false
+entity.iw = {}
 
 function entity:update()
+
    -- Test for a collision with the terrain and project out of it if necessary
-   local collideState, wall, projection = terrain:collide(self.p, self.hw)
-   if collideState == "none" then
-      self.cs = "none"
-   elseif collideState == "intersecting" then
-      self.cs = "intersecting"
-   elseif collideState == "projected" then
-      if self.cs ~= "intersecting" then
-	 self.p = self.p + projection
-	 self.cs = "projected"
-      end
-   end
    -- BUG: entities pass through all walls when intersecting, not just the first wall it intersected
+   -- Either entity needs to receive multiple projections, or collide needs to handle intersections
+   local projection, collisions = terrain:collide(self.p, self.hw, self.iw)
+   self.p = self.p + projection
+   self.iw = collisions
+   
+   -- if collideState == "none" then
+   --    self.cs = "none"
+   -- elseif collideState == "intersecting" then
+   --    self.cs = "intersecting"
+   -- elseif collideState == "projected" then
+   --    if self.cs ~= "intersecting" then
+   -- 	 self.p = self.p + projection
+   -- 	 self.cs = "projected"
+   --    end
+   -- end
    
    -- Only allow jumping on slopes that aren't steeper than 45 degrees
    if self.cs == "projected" and wall.normal.y < -0.5 then
-      self.canJump = true
+      self.cj = true
    else
-      self.canJump = false
+      self.cj = false
    end
    
    -- Verlet integration: entities keep their momentum
@@ -56,10 +62,10 @@ function entity:draw()
 end
 
 function entity:jump()
-   if self.canJump then
+   if self.cj then
       -- TODO: function to change velocity
       self.pp.y = self.pp.y + 15
-      self.canJump = false
+      self.cj = false
    end
 end
 

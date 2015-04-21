@@ -22,12 +22,28 @@ function isa( clone_object, base_object )
    return _isa
 end
 
-function map(func, array)
-   local new_array = {}
-   for i,v in ipairs(array) do
-      new_array[i] = func(v)
+function array(t)
+   result = {}
+   for k, v in pairs(t) do
+      table.insert(result, v)
    end
-   return new_array
+   return result
+end
+
+function map(f, t)
+   local result = {}
+   for k, v in pairs(t) do
+      result[k] = f(v)
+   end
+   return result
+end
+
+function reverse(t)
+   local result = {}
+   for k, v in pairs(t) do
+      result[v] = k
+   end
+   return result
 end
 
 function serialize(o)

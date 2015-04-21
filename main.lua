@@ -73,9 +73,9 @@ function love.update(dt)
 	    lineEnd = mouse.world()
 	 end
       elseif currentMode == "delete" then
-	 local _, wall, _ = terrain:collide(mouse.world(), vector(5, 5))
-	 if wall then
-	    terrain:deleteWall(wall)
+	 local _, walls = terrain:collide(mouse.world(), vector(5, 5))
+	 for k, v in pairs(walls) do
+	    terrain:deleteWall(v)
 	 end
       end
    end
