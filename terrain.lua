@@ -1,8 +1,11 @@
+
 require("vector")
 require("util")
 
 local terrain = {}
 terrain.walls = {}
+
+local lastFileName = "quit.sav"
 
 function terrain:newWall(a, b)
    local result = {}
@@ -38,8 +41,6 @@ end
 function terrain:deleteWall(wall)
    wall.deleted = true
 end
-
-local lastFileName = "quit.sav"
 
 function terrain:write(filename)
    filename = filename or lastFileName
@@ -128,30 +129,37 @@ function terrain:draw()
    end
 end
 
+-- Simply returns the first colliding wall. Should be faster than full collisions with projection
 function terrain:check(position, halfwidth)
    local p = vector(position.x, position.y)
    local hw = halfwidth
    
    for k, v in ipairs(self.walls) do   
-
+      local continue = true
+      
       -- x axis
       local dx = v.p.x - p.x
       local wx = v.hw.x + hw.x
-      if not math.abs(dx) < wx then return false end
+      if not (math.abs(dx) < wx) then continue = false end
 
       -- y axis
-      local dy = v.p.y - p.y
-      local wy = v.hw.y + hw.y
-      if not math.abs(dy) < wy then return false end
+
+      if continue then
+	 local dy = v.p.y - p.y
+	 local wy = v.hw.y + hw.y
+	 if not (math.abs(dy) < wy) then yaxis = false end
+      end
 
       -- hypotenuse
-      local d = (v.p - p):projectOn(v.normal)
-      local dh = vector.len(d)
-      local wh = vector.len((hw):projectOn(vector.abs(v.normal)))
-      if not dh < wh then return false end
+      if continue then
+	 local d = (v.p - p):projectOn(v.normal)
+	 local dh = vector.len(d)
+	 local wh = vector.len((hw):projectOn(vector.abs(v.normal)))
+	 if dh < wh then
+	    return v
+	 end
+      end
    end
-   
-   return true
 end
 
 function terrain:collide(position, halfwidth, previousIntersections)

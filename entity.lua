@@ -21,6 +21,7 @@ function entity:update()
    self.iw = intersections
 
    -- BUG: entity passes through convex corners
+   -- possible fix: make it so some walls are solid on both sides
    
    -- Only allow jumping when the entity was projected out of a wall
    -- BUG: entity can jump on any slope
