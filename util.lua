@@ -38,6 +38,27 @@ function map(f, t)
    return result
 end
 
+function filter(f, t)
+   local result = {}
+   for k, v in pairs(t) do
+      if f(v) then
+	 result[k] = v
+      end
+   end
+   return newtbl
+end
+
+function fold(f, x, t)
+   for k, v in pairs(t) do
+      x = f(x, v)
+   end
+   return x
+end
+
+function reduce(f, t)
+   return fold(f, t[1], table.remove(t, 1))
+end
+
 function reverse(t)
    local result = {}
    for k, v in pairs(t) do

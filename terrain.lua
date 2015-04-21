@@ -128,15 +128,41 @@ function terrain:draw()
    end
 end
 
-function terrain:collide(position, halfwidth, intersected)
+function terrain:check(position, halfwidth)
    local p = vector(position.x, position.y)
    local hw = halfwidth
-   local state = "none"
-   local wall = nil
+   
+   for k, v in ipairs(self.walls) do   
+
+      -- x axis
+      local dx = v.p.x - p.x
+      local wx = v.hw.x + hw.x
+      if not math.abs(dx) < wx then return false end
+
+      -- y axis
+      local dy = v.p.y - p.y
+      local wy = v.hw.y + hw.y
+      if not math.abs(dy) < wy then return false end
+
+      -- hypotenuse
+      local d = (v.p - p):projectOn(v.normal)
+      local dh = vector.len(d)
+      local wh = vector.len((hw):projectOn(vector.abs(v.normal)))
+      if not dh < wh then return false end
+   end
+   
+   return true
+end
+
+function terrain:collide(position, halfwidth, previousIntersections)
+   previousIntersections = previousIntersections or {}
+   
+   local p = vector(position.x, position.y)
+   local hw = halfwidth
    local intersections = {}
 
    -- reversing the table makes it easy to check if the table contains a wall
-   local reverseIntersected = reverse(intersected)
+   local reverseIntersections = reverse(previousIntersections)
    
    local result = vector()
    for k, v in ipairs(self.walls) do
@@ -181,7 +207,9 @@ function terrain:collide(position, halfwidth, intersected)
       if xaxis and yaxis and haxis then
 	 v.color = true
 
-	 if not reverseIntersected[v] then
+	 if reverseIntersections[v] then
+	    table.insert(intersections, v)
+	 else
 	    local a = math.min(math.abs(haxis), math.min(math.abs(xaxis), (math.abs(yaxis))))
 	    if a == math.abs(xaxis) and math.sign(xaxis) == math.sign(v.normal.x) then
 	       p.x = p.x + xaxis
@@ -192,8 +220,6 @@ function terrain:collide(position, halfwidth, intersected)
 	    else
 	       table.insert(intersections, v)
 	    end
-	 else
-	    table.insert(intersections, v)
 	 end
       end
    end

@@ -16,23 +16,15 @@ function entity:update()
    -- Test for a collision with the terrain and project out of it if necessary
    -- BUG: entities pass through all walls when intersecting, not just the first wall it intersected
    -- Either entity needs to receive multiple projections, or collide needs to handle intersections
-   local projection, collisions = terrain:collide(self.p, self.hw, self.iw)
+   local projection, intersections = terrain:collide(self.p, self.hw, self.iw)
    self.p = self.p + projection
-   self.iw = collisions
+   self.iw = intersections
+
+   -- BUG: entity passes through convex corners
    
-   -- if collideState == "none" then
-   --    self.cs = "none"
-   -- elseif collideState == "intersecting" then
-   --    self.cs = "intersecting"
-   -- elseif collideState == "projected" then
-   --    if self.cs ~= "intersecting" then
-   -- 	 self.p = self.p + projection
-   -- 	 self.cs = "projected"
-   --    end
-   -- end
-   
-   -- Only allow jumping on slopes that aren't steeper than 45 degrees
-   if self.cs == "projected" and wall.normal.y < -0.5 then
+   -- Only allow jumping when the entity was projected out of a wall
+   -- BUG: entity can jump on any slope
+   if projection ~= vector() then
       self.cj = true
    else
       self.cj = false
