@@ -24,8 +24,8 @@ function entity:update()
    -- possible fix: make it so some walls are solid on both sides
    
    -- Only allow jumping when the entity was projected out of a wall
-   -- BUG: entity can jump on any slope
-   if projection ~= vector() then
+   -- There might be a corner case here for multiple projections
+   if projection:normalize().y < -0.5 then
       self.cj = true
    else
       self.cj = false
