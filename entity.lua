@@ -7,15 +7,12 @@ entity.w = vector(50, 100)
 entity.hw = entity.w / 2
 entity.v = vector()
 entity.a = vector()
-entity.cs = "none"
 entity.cj = false
 entity.iw = {}
 
 function entity:update()
 
    -- Test for a collision with the terrain and project out of it if necessary
-   -- BUG: entities pass through all walls when intersecting, not just the first wall it intersected
-   -- Either entity needs to receive multiple projections, or collide needs to handle intersections
    local projection, intersections = terrain:collide(self.p, self.hw, self.iw)
    self.p = self.p + projection
    self.iw = intersections

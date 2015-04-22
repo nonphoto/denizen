@@ -174,6 +174,7 @@ function terrain:collide(position, halfwidth, previousIntersections)
    
    local result = vector()
    for k, v in ipairs(self.walls) do
+      local continue = true
       
       -- x axis
       local xaxis = false
@@ -185,34 +186,44 @@ function terrain:collide(position, halfwidth, previousIntersections)
 	 else
 	    xaxis = dx + wx
 	 end
+      else
+	 continue = false
       end
 
-      -- y axis
+      -- y axis      
       local yaxis = false
-      local dy = v.p.y - p.y
-      local wy = v.hw.y + hw.y
-      if math.abs(dy) < wy then
-	 if dy > 0 then
-	    yaxis = dy - wy
+      if continue then
+	 local dy = v.p.y - p.y
+	 local wy = v.hw.y + hw.y
+	 if math.abs(dy) < wy then
+	    if dy > 0 then
+	       yaxis = dy - wy
+	    else
+	       yaxis = dy + wy
+	    end
 	 else
-	    yaxis = dy + wy
+	    continue = false
 	 end
       end
 
       -- hypotenuse
       local haxis = false
-      local d = (v.p - p):projectOn(v.normal)
-      local dh = vector.len(d)
-      local wh = vector.len((hw):projectOn(vector.abs(v.normal)))
-      if dh < wh then
-	 if (v.normal.y >= 0 and d.y >= 0) or (v.normal.y <= 0 and d.y <= 0) then
-	    haxis = -(wh - dh)
+      if continue then
+	 local d = (v.p - p):projectOn(v.normal)
+	 local dh = vector.len(d)
+	 local wh = vector.len((hw):projectOn(vector.abs(v.normal)))
+	 if dh < wh then
+	    if (v.normal.y >= 0 and d.y >= 0) or (v.normal.y <= 0 and d.y <= 0) then
+	       haxis = -(wh - dh)
+	    else
+	       haxis = wh - dh
+	    end
 	 else
-	    haxis = wh - dh
+	    continue = false
 	 end
       end
       
-      if xaxis and yaxis and haxis then
+      if continue then
 	 v.color = true
 
 	 if reverseIntersections[v] then
