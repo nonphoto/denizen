@@ -7,6 +7,7 @@ entity.w = vector(50, 100)
 entity.hw = entity.w / 2
 entity.v = vector()
 entity.a = vector()
+entity.grounded = false
 entity.cj = false
 entity.iw = {}
 

@@ -57,7 +57,6 @@ function love.update(dt)
 	 print(f())
       end
    end
-   
    local v = 1.5
    if love.keyboard.isDown("up") or love.keyboard.isDown("w")    then player:move( 0, -v) end
    if love.keyboard.isDown("down") or love.keyboard.isDown("s")  then player:move( 0,  v) end
@@ -83,8 +82,7 @@ function love.update(dt)
    terrain:update()
    player:update()
 
-   local d = (player.p - camera.p) / 5
-   camera:move(d)
+   camera:move((player.p - camera.p) / 5)
 end
 
 function love.draw()

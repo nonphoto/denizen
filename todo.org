@@ -1,6 +1,9 @@
 * Denizen To-do List
 
-** Engine
+**** TODO Give entities more realistic friction
+**** TODO Fix bug where entities fall through wall corners when moving slowly
+
+*** Engine
 - [-] User Interface
   - [ ] Frames
     - [ ] Auto-layout
@@ -12,7 +15,7 @@
   - [X] Interpret lua chunks from terminal
   - [ ] Interface
 
-** Gameplay
+*** Gameplay
 - [-] Terrain
   - [-] Editing
     - [X] Draw segments
@@ -32,10 +35,13 @@
       - [X] Projection from segment ends
       - [X] Does not project from opposite side
       - [X] Does not project when already intersecting
+    - [-] Friction
+      - [ ] Ground
+      - [X] Air
 - [ ] Player Mechanics
   - [ ] Moves
-    - [ ] Input translation
-    - [ ] Input combination
+    - [ ] Keybindings
+    - [ ] Input interpretation
     - [ ] Player state machine
       - [ ] Switching states based on priority
       - [ ] Updating and drawing mid-state
@@ -46,7 +52,7 @@
   - [ ] Scene Interaction
 - [ ] AI
 
-** Visuals
+*** Visuals
 - [-] Scene
   - [-] Camera
     - [X] Graphics transformation
