@@ -13,6 +13,7 @@ terrain = require("terrain")
 scene = require("scene")
 player = require("entity")
 camera = require("camera")
+context = require("context")
 ui = require("ui")
 levelEditor = require("level-editor")
 animationEditor = require("animation-editor")
@@ -20,19 +21,15 @@ animationEditor = require("animation-editor")
 require("vector")
 
 currentMode = "draw"
+currentContext = levelEditor
 gravity = true
-context = levelEditor
-switch = true
 
--- TODO: assert that contexts have the necessary functions
-function switchContext(context)
-   if switch then
-      context = animationEditor
-   else
-      context = levelEditor
-   end
-   switch = not switch
-   context.load()
+function switchContext(c)
+   assert(isa(c, context),
+	  "Cannot switch to an object that isn't a clone of 'context'.")
+   currentContext.unload()
+   currentContext = c
+   currentContext.load()
 end
 
 mouse = {}
@@ -56,7 +53,7 @@ function love.load()
    thread = love.thread.newThread("console.lua");
    thread:start();
    
-   context.load()
+   currentContext.load()
 end
 
 function love.update(dt)
@@ -68,35 +65,35 @@ function love.update(dt)
       end
    end
 
-   context.update(dt)
+   currentContext.update(dt)
 end
 
 function love.draw()
-   context.draw()
+   currentContext.draw()
    
    love.graphics.setColor(255, 255, 255, 100)
    love.graphics.print(love.timer.getFPS(), 200, 10)
 end
 
 function love.keypressed(key)
-   context.keypressed(key)
+   currentContext.keypressed(key)
 end
 
 function love.keyreleased(key)
    if key == "escape" then love.event.quit() end
-   context.keyreleased(key)
+   currentContext.keyreleased(key)
 end
 
 function love.mousepressed(x, y, button)
-   context.mousepressed(x, y, button)
+   currentContext.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
-   context.mousereleased(x, y, button)
+   currentContext.mousereleased(x, y, button)
 end
 
 function love.quit()
-   context.unload()
+   currentContext.unload()
    print()
 end
 

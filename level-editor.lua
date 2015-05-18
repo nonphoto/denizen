@@ -1,4 +1,6 @@
-local levelEditor = {}
+context = require("context")
+util = require("util")
+local levelEditor = clone(context)
 
 function levelEditor.load()
    terrain:read()

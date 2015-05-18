@@ -1,4 +1,6 @@
-local animationEditor = {}
+context = require("context")
+util = require("util")
+local animationEditor = clone(context)
 
 function animationEditor.load()
 
