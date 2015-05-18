@@ -1,4 +1,3 @@
-
 camera = {}
 camera.p = vector()
 camera.s = 1
@@ -37,5 +36,3 @@ end
 function camera:toWorldSpace(v)
    return v + self.p - vector(love.graphics.getWidth(), love.graphics.getHeight()) / 2
 end
-
-return camera

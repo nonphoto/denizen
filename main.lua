@@ -1,30 +1,20 @@
-math.randomseed(os.time())
-math.lerp = function(v0, v1, t)
-   return (1 - t) * v0 + (t) * v1
-end
-math.sign = function(x)
-   if x > 0 then return 1 end
-   if x == 0 then return 0 end
-   if x < 0 then return -1 end
-end
-
-inspect = require("inspect")
-terrain = require("terrain")
-scene = require("scene")
-player = require("entity")
-camera = require("camera")
-context = require("context")
-ui = require("ui")
-levelEditor = require("level-editor")
-animationEditor = require("animation-editor")
-
+require("util")
 require("vector")
+require("ui")
+require("entity")
+require("camera")
+require("scene")
+require("terrain")
+require("context")
+require("level-editor")
+require("animation-editor")
 
 currentMode = "draw"
 currentContext = levelEditor
 gravity = true
 
 function switchContext(c)
+   local context = require("context")
    assert(isa(c, context),
 	  "Cannot switch to an object that isn't a clone of 'context'.")
    currentContext.unload()

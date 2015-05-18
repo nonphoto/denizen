@@ -1,8 +1,6 @@
-
 require("vector")
-require("util")
 
-local terrain = {}
+terrain = {}
 terrain.walls = {}
 
 local lastFileName = "quit.sav"
@@ -245,5 +243,3 @@ function terrain:collide(position, halfwidth, previousIntersections)
    
    return p - position, intersections
 end
-
-return terrain

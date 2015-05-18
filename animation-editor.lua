@@ -1,6 +1,6 @@
-context = require("context")
-util = require("util")
-local animationEditor = clone(context)
+require("util")
+require("context")
+animationEditor = clone(context)
 
 function animationEditor.load()
 
@@ -33,5 +33,3 @@ end
 function animationEditor.mousereleased(x, y, button)
 
 end
-
-return animationEditor

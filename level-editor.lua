@@ -1,6 +1,11 @@
-context = require("context")
-util = require("util")
-local levelEditor = clone(context)
+require("util")
+require("context")
+require("terrain")
+require("scene")
+require("camera")
+require("entity")
+
+levelEditor = clone(context)
 
 function levelEditor.load()
    terrain:read()
@@ -137,5 +142,3 @@ function levelEditor.mousereleased(x, y, button)
       ui.mousereleased(x, y, button)
    end
 end
-
-return levelEditor

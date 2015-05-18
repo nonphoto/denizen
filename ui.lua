@@ -1,4 +1,4 @@
-local ui = {}
+ui = {}
 ui.drawList = {}
 
 function ui.draw()
@@ -88,5 +88,3 @@ function ui.drawWidget(drawFunction, position)
 	  "invalid input: " .. tostring(drawFunction) .. " is not a function")
    table.insert(ui.drawList, {drawFunction = drawFunction, position = position})
 end
-
-return ui

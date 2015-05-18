@@ -1,3 +1,15 @@
+math.randomseed(os.time())
+
+math.lerp = function(v0, v1, t)
+   return (1 - t) * v0 + (t) * v1
+end
+
+math.sign = function(x)
+   if x > 0 then return 1 end
+   if x == 0 then return 0 end
+   if x < 0 then return -1 end
+end
+
 function clone( base_object, clone_object )
    if type( base_object ) ~= "table" then
       return clone_object or base_object

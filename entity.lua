@@ -74,4 +74,4 @@ function entity:reset()
    self.pp = vector()
 end
 
-return entity
+player = entity

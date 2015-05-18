@@ -1,6 +1,4 @@
-require("vector")
-
-local scene = {}
+scene = {}
 scene.textures = {}
 
 function scene:newImage(filename, position)
@@ -14,5 +12,3 @@ function scene:draw()
       love.graphics.draw(v.image, v.position:unpack())
    end
 end
-
-return scene

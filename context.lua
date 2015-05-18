@@ -1,4 +1,4 @@
-local context = {}
+context = {}
 
 function context.load()
 
@@ -31,6 +31,4 @@ end
 function context.mousereleased(x, y, button)
 
 end
-
-return context
 
