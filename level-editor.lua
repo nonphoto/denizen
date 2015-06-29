@@ -16,7 +16,7 @@ function levelEditor.unload()
 end
 
 function levelEditor.update(dt)
-   local v = 1.5
+   local v = 1.0
    if love.keyboard.isDown("up") or love.keyboard.isDown("w")    then player:move( 0, -v) end
    if love.keyboard.isDown("down") or love.keyboard.isDown("s")  then player:move( 0,  v) end
    if love.keyboard.isDown("left") or love.keyboard.isDown("a")  then player:move(-v,  0) end
@@ -133,7 +133,11 @@ function levelEditor.mousereleased(x, y, button)
 	 return
       end
       if currentMode == "draw" then
-	 terrain:newWall(lineStart, lineEnd)
+	 if love.keyboard.isDown("lshift") then
+	    terrain:newWall(lineEnd, lineStart)
+	 else
+	    terrain:newWall(lineStart, lineEnd)
+	 end
 	 lineStart = nil
 	 lineEnd = nil
       elseif currentMode == "image" then

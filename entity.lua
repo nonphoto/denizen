@@ -7,7 +7,6 @@ entity.w = vector(50, 100)
 entity.hw = entity.w / 2
 entity.v = vector()
 entity.a = vector()
-entity.grounded = false
 entity.cj = false
 entity.iw = {}
 
@@ -35,8 +34,12 @@ function entity:update()
    self.pp.y = self.p.y
 
    -- Friction
-   self.p = self.p + (v * 0.9)
-
+   if self.cj then
+      self.p = self.p + (v * 0.9)
+   else
+      self.p = self.p + (v * 0.99)
+   end
+   
    -- Gravity
    if gravity then
       self.p.y = self.p.y + 1
@@ -61,11 +64,15 @@ function entity:jump()
 end
 
 function entity:move(x, y)
+   local c = 0.2
+   if self.cj then
+      c = 1
+   end
    if type(x) == "table" then
-      self.p = self.p + x
+      self.p = self.p + c * x
    else
-      self.p.x = self.p.x + (x or 0)
-      self.p.y = self.p.y + (y or 0)
+      self.p.x = self.p.x + c * (x or 0)
+      self.p.y = self.p.y + c * (y or 0)
    end
 end
 
