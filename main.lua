@@ -70,7 +70,6 @@ function love.keypressed(key)
 end
 
 function love.keyreleased(key)
-   if key == "escape" then love.event.quit() end
    currentContext.keyreleased(key)
 end
 
@@ -86,7 +85,3 @@ function love.quit()
    currentContext.unload()
    print()
 end
-
-   
-   
-      
