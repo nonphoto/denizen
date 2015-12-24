@@ -5,22 +5,9 @@ require("entity")
 require("camera")
 require("scene")
 require("terrain")
-require("context")
-require("level-editor")
-require("animation-editor")
 
 currentMode = "draw"
-currentContext = levelEditor
 gravity = true
-
-function switchContext(c)
-   local context = require("context")
-   assert(isa(c, context),
-          "Cannot switch to an object that isn't a clone of 'context'.")
-   currentContext.unload()
-   currentContext = c
-   currentContext.load()
-end
 
 mouse = {}
 function mouse.screen()
@@ -31,13 +18,15 @@ function mouse.world()
    return camera:toWorldSpace(mouse.screen())
 end
 
--- Engine Functions
 
-   function love.load()
-      love.graphics.setLineWidth(2)
 
-      terrain:read()
-   end
+-- LOVE functions
+
+function love.load()
+   love.graphics.setLineWidth(2)
+
+   terrain:read()
+end
 
 function love.update(dt)
    local v = 1.0
@@ -135,20 +124,20 @@ end
 function love.mousepressed(x, y, button)
    if button == 'l' then
       if love.keyboard.isDown("lctrl") then
-	 love.mousepressed(x, y, 'r')
-	 return
+         love.mousepressed(x, y, 'r')
+         return
       end
 
       local m = camera:toWorldSpace(vector(x, y))
 
       if currentMode == "draw" then
-	 local p = terrain:pointInRadius(m, 10)
-	 if p then
-	    lineStart = p
-	 else
-	    lineStart = m
-	 end
-	 lineEnd = m
+         local p = terrain:pointInRadius(m, 10)
+         if p then
+            lineStart = p
+         else
+            lineStart = m
+         end
+         lineEnd = m
       end
    end
 
@@ -158,19 +147,19 @@ end
 function love.mousereleased(x, y, button)
    if button == 'l' then
       if love.keyboard.isDown("lctrl") then
-	 love.mousereleased(x, y, 'r')
-	 return
+         love.mousereleased(x, y, 'r')
+         return
       end
       if currentMode == "draw" then
-	 if love.keyboard.isDown("lshift") then
-	    terrain:newWall(lineEnd, lineStart)
-	 else
-	    terrain:newWall(lineStart, lineEnd)
-	 end
-	 lineStart = nil
-	 lineEnd = nil
+         if love.keyboard.isDown("lshift") then
+            terrain:newWall(lineEnd, lineStart)
+         else
+            terrain:newWall(lineStart, lineEnd)
+         end
+         lineStart = nil
+         lineEnd = nil
       elseif currentMode == "image" then
-	 scene:newImage("missing.png", camera:toWorldSpace(vector(x, y)))
+         scene:newImage("missing.png", camera:toWorldSpace(vector(x, y)))
       end
       ui.mousereleased(x, y, button)
    end
