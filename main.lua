@@ -7,7 +7,7 @@ require("scene")
 require("terrain")
 
 currentMode = "draw"
-gravity = true
+gravity = false
 
 mouse = {}
 function mouse.screen()
@@ -124,20 +124,20 @@ end
 function love.mousepressed(x, y, button)
    if button == 1 then
       if love.keyboard.isDown("lctrl") then
-         love.mousepressed(x, y, 'r')
-         return
+	 love.mousepressed(x, y, 'r')
+	 return
       end
 
       local m = camera:toWorldSpace(vector(x, y))
 
       if currentMode == "draw" then
-         local p = terrain:pointInRadius(m, 10)
-         if p then
-            lineStart = p
-         else
-            lineStart = m
-         end
-         lineEnd = m
+	 local p = terrain:pointInRadius(m, 10)
+	 if p then
+	    lineStart = p
+	 else
+	    lineStart = m
+	 end
+	 lineEnd = m
       end
    end
 
@@ -147,19 +147,19 @@ end
 function love.mousereleased(x, y, button)
    if button == 1 then
       if love.keyboard.isDown("lctrl") then
-         love.mousereleased(x, y, 'r')
-         return
+	 love.mousereleased(x, y, 'r')
+	 return
       end
       if currentMode == "draw" then
-         if love.keyboard.isDown("lshift") then
-            terrain:newWall(lineEnd, lineStart)
-         else
-            terrain:newWall(lineStart, lineEnd)
-         end
-         lineStart = nil
-         lineEnd = nil
+	 if love.keyboard.isDown("lshift") then
+	    terrain:newWall(lineEnd, lineStart)
+	 else
+	    terrain:newWall(lineStart, lineEnd)
+	 end
+	 lineStart = nil
+	 lineEnd = nil
       elseif currentMode == "image" then
-         scene:newImage("missing.png", camera:toWorldSpace(vector(x, y)))
+	 scene:newImage("missing.png", camera:toWorldSpace(vector(x, y)))
       end
       ui.mousereleased(x, y, button)
    end
