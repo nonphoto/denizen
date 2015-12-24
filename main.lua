@@ -122,7 +122,7 @@ function love.keyreleased(key)
 end
 
 function love.mousepressed(x, y, button)
-   if button == 'l' then
+   if button == 1 then
       if love.keyboard.isDown("lctrl") then
          love.mousepressed(x, y, 'r')
          return
@@ -145,7 +145,7 @@ function love.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
-   if button == 'l' then
+   if button == 1 then
       if love.keyboard.isDown("lctrl") then
          love.mousereleased(x, y, 'r')
          return
