@@ -22,7 +22,7 @@ function levelEditor.update(dt)
    if love.keyboard.isDown("left") or love.keyboard.isDown("a")  then player:move(-v,  0) end
    if love.keyboard.isDown("right") or love.keyboard.isDown("d") then player:move( v,  0) end
    
-   if love.mouse.isDown("l") then
+   if love.mouse.isDown(1) then
       if currentMode == "draw" then
 	 local p = terrain:pointInRadius(mouse.world(), 10)
 	 if p then
