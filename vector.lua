@@ -124,5 +124,3 @@ end
 function vector:cross(other)
    return self.x * other.y - self.y * other.x
 end
-
-setmetatable(vector, {__call = function(_, ...) return vector.new(...) end})
